@@ -1,0 +1,275 @@
+{% extends "main.html" %}
+{% load humanize %}
+
+{% block title %}
+    Détails du paiement
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-left mb-3" style="padding: 0 25px;">
+    <a href="javascript:void(0);" 
+       onclick="window.location=constructUrl('{% url 'payments' %}')" 
+       class="text-decoration-none d-flex align-items-center" 
+       style="letter-spacing: 1.2px;">
+        <i class="fas fa-arrow-left" style="color: #060747; margin-right: 25px"></i>
+    </a>
+    <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Paiement REF[{{ payment.ref }}] ({{ payment.state }})</p>
+
+    {% if is_admin %}
+        <div class="d-flex justify-content-end ml-auto">
+            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
+            <button type="button" class="btn btn-list ml-lg-3 mt-lg-0 mt-2" data-toggle="modal" data-target="#validationCycleModal">Cycle</button>
+        </div>
+    {% elif is_draft and is_commercial and payment.commercial == user %}
+        <div class="d-flex justify-content-end ml-auto">
+            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
+            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="table-responsive" style="padding: 15px;">
+    <div class="row mb-4">
+        <div class="col-lg-6 col-md-6 mb-2">
+            <label class="form-label">Commercial</label>
+            <p class="form-control">{{ payment.commercial }}</p>
+        </div>
+        <div class="col-lg-6 col-md-6 mb-2">
+            <label class="form-label">Zone</label>
+            <p class="form-control">{{ payment.zone }}</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Client</label>
+            <p class="form-control">{{ payment.client }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Date de paiement</label>
+            <p class="form-control">{{ payment.date }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Référence</label>
+            <p class="form-control">{{ payment.ref }}</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Nom de banque</label>
+            <p class="form-control">{{ payment.bank }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Type de versement</label>
+            <p class="form-control">{{ payment.payment_type }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Montant</label>
+            <p class="form-control">{{ payment.amount|intcomma }} DZD</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-6 col-md-6 mb-2">
+            <label class="form-label form-obs">Observation</label>
+            <p class="form-control">{{ payment.observation }}</p>
+        </div>
+        <div class="col-lg-6 col-md-6 mb-2">
+            <label class="form-label">Chèque (Image)</label>
+        </br>
+            {% if payment.check_image %}
+                <img src="{{ payment.check_image.url }}" alt="Check Image" class="img-fluid" />
+            {% else %}
+                <p>Aucune image</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center" style="padding: 15px;">
+    {% if is_draft and is_admin %}
+        <button class="btn btn-success mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
+        <button class="btn btn-danger" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
+    {% elif is_admin and is_confirmed %}
+        <button class="btn btn-success mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
+        <button class="btn btn-danger" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
+    {% endif %}
+    {% if is_draft and is_commercial %}
+        <button class="btn btn-success mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
+        <button class="btn btn-danger" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
+    {% elif is_back_office and is_confirmed %}
+        <button class="btn btn-success mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
+        <button class="btn btn-danger" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
+    {% endif %}
+</div>
+
+<style>
+    .form-label{
+        color: #343434; 
+        font-weight: 600;
+    }
+    .form-control{
+        background-color: #ffffff; 
+        padding-left: 30px; 
+        border-radius: 100px;
+    }
+    .form-obs{
+        border-radius: 50px;
+    }
+</style>
+
+<script>
+    function confirmPayment(paymentId) {
+        swal({
+            title: "Confirmer le paiement",
+            text: "Êtes-vous sûr de vouloir confirmer ce paiement ?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+        })
+        .then((willConfirm) => {
+            if (willConfirm) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'confirm_payment' 0 %}".replace('0', paymentId),
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            swal("Succès!", response.message, "success")
+                            .then(() => {
+                                location.reload();  // Refresh the page or redirect as needed
+                            });
+                        } else {
+                            swal("Erreur!", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("Erreur!", "Une erreur s'est produite. Veuillez réessayer.", "error");
+                    }
+                });
+            }
+        });
+    }
+    
+    function cancelPayment(paymentId) {
+        swal({
+            title: "Annuler le paiement",
+            text: "Êtes-vous sûr de vouloir annuler ce paiement ?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+        })
+        .then((willCancel) => {
+            if (willCancel) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'cancel_payment' 0 %}".replace('0', paymentId),
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            swal("Succès!", response.message, "success")
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            swal("Erreur!", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("Erreur!", "Une erreur s'est produite. Veuillez réessayer.", "error");
+                    }
+                });
+            }
+        });
+    }
+    
+    function validatePayment(paymentId) {
+        swal({
+            title: "Valider le paiement",
+            text: "Êtes-vous sûr de vouloir valider ce paiement ?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+        })
+        .then((willValidate) => {
+            if (willValidate) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'validate_payment' 0 %}".replace('0', paymentId),
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            swal("Succès!", response.message, "success")
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            swal("Erreur!", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("Erreur!", "Une erreur s'est produite. Veuillez réessayer.", "error");
+                    }
+                });
+            }
+        });
+    }
+    
+    function refusePayment(paymentId) {
+        swal({
+            title: "Refuser le paiement",
+            text: "Veuillez entrer le motif de refus :",
+            content: {
+                element: "input",
+                attributes: {
+                    placeholder: "Motif de refus",
+                    type: "text",
+                },
+            },
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((refusalReason) => {
+            if (refusalReason) {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'refuse_payment' 0 %}".replace('0', paymentId),
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                        refusal_reason: refusalReason,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            swal("Succès!", response.message, "success")
+                            .then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            swal("Erreur!", response.message, "error");
+                        }
+                    },
+                    error: function() {
+                        swal("Erreur!", "Une erreur s'est produite. Veuillez réessayer.", "error");
+                    }
+                });
+            } else {
+                swal("Erreur!", "Motif de refus requis.", "error");
+            }
+        });
+    }
+    
+    
+</script>
+
+
+{% endblock %}

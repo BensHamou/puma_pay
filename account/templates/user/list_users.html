@@ -1,0 +1,103 @@
+{% extends "main.html" %}
+
+{% block title %}
+Paramètre Utilisateurs
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3" style="padding: 0 25px;">
+    <div class="col-12">
+        <p class="mb-4 page-title" style="color: #0082cd;">Liste des utilisateurs</p>
+    </div>
+    <div class="col-12">
+        <form method="GET">
+            <div class="row justify-content-between align-items-center mb-3">
+                <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column mb-lg-0 mb-3">
+                    {{ filteredData.form.search }}
+                    {{ filteredData.form.new_users_only }}
+                </div>
+                <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center">
+                    <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
+                           class="form-control" style="width: 15%; margin-right: 10px; border-radius: 100px;">
+                    <button type="submit" class="btn-list mt-lg-0 mt-2" style='margin-left: 5px;'>Appliquer</button>
+                    <a href="{% url 'refresh_users' %}" class="btn-icon mt-lg-0 mt-2"><i class="fa-solid fa-arrows-rotate"></i></a>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+</div>
+<div class="table-responsive p-0 m-0">
+    <table class="table table-borderless">
+        <thead>
+            <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
+                <th class="table-header">ID</th>
+                <th class="table-header">Nom complet</th>
+                <th class="table-header">Email</th>
+                <th class="table-header">Zones</th>
+                <th class="table-header">Rôle</th>
+                <th class="table-header" style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if page %}
+                {% for user in page %}
+                <tr style="color: #5d5d5d;">
+                    <td class="table-text">{{ user.id }}</td>
+                    <td class="table-text">{{ user.fullname }}</td>
+                    <td class="table-text">{{ user.email }}</td>
+                    <td class="d-none d-md-table-cell">
+                        {% for zone in user.zones.all %}
+                            <span class="badge listBadge">
+                                <p class="lead p-0 m-0 listBadgeText">{{ zone.designation }}</p>
+                            </span>
+                        {% empty %}
+                            <span class="badge" style="color: #bcc2cf;">Pas de zones associées.</span>
+                        {% endfor %}
+                    </td>
+                    <td class="table-text">{{ user.role }}</td>
+                    <td class="text-center p-0 m-0">
+                        <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_user' user.id %}')" 
+                            class="btn" style="color: #5d5d5d;">
+                            <i class="far fa-pen-to-square"></i>
+                        </a>
+                        <a href="javascript:void(0);" onclick="confirmUserDel('{{ user.id }}', '{{ user.fullname }}')"
+                            class="btn" style="color: #5d5d5d;">
+                            <i class="far fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="text-center" style="color: #5d5d5d;">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% if page.has_other_pages %}
+    {% include 'pagination.html' %}
+{% endif %}
+
+<script>
+    function confirmUserDel(userId, userName) {
+        swal({
+            title: `Confirmation de la suppression.`,
+            text: `Etes-vous sûr que vous voulez supprimer ${userName}?`,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }, function(isConfirm) {
+            if (isConfirm) {
+                window.location.href = "{% url 'delete_user' 0 %}".replace('0', userId);
+            }
+        });
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "main.html" %}
+
+{% block title %}
+{% if objective %} Modification de l'objectif pour la zone {{ objective.zone.designation }} {% else %} Création d'un objectif {% endif %}
+{% endblock %}
+{% load static %} 
+
+{% block content %}
+<div class="d-flex justify-content-left mb-3" style="padding: 0 25px;">
+    <a href="javascript:void(0);" 
+        onclick="window.location=constructUrl('{% url 'objectives' %}')" 
+        class="text-decoration-none d-flex align-items-center" 
+        style="letter-spacing: 1.2px;">
+        <i class="fas fa-arrow-left" style="color: #060747; margin-right: 25px"></i>
+        <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Liste des objectifs</p>
+    </a>
+    <div class="d-flex justify-content-end ml-auto">
+        <button type="submit" form="objective-form" class="btn-list">Sauvegarder</button>
+    </div>
+</div>
+
+<form method="POST" id="objective-form">
+    {% csrf_token %}
+    <div class="table-responsive" style="padding: 15px;">
+        <div class="row mb-4">
+            <div class="col-lg-6 col-md-12 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Zone</label>
+                {{ form.zone }}
+                {% if form.zone.errors %}
+                    <small class="text-danger">{{ form.zone.errors }}</small>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-6 col-md-12 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Mois</label>
+                {{ form.month }}
+                {% if form.month.errors %}
+                    <small class="text-danger">{{ form.month.errors }}</small>
+                {% endif %}
+            </div>
+
+            <div class="col-lg-6 col-md-12 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Montant</label>
+                {{ form.amount }}
+                {% if form.amount.errors %}
+                    <small class="text-danger">{{ form.amount.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+<div class="input-group">
+    <input type="text" id="check-image-filename" class="form-control input-file" placeholder="No file chosen" readonly>
+    <button class="btn btn-outline-success" type="button" id="check-image-btn">+</button>
+    <button type="button" id="check-image-clear-btn" class="btn btn-danger">X</button>
+</div>
+<input type="file" id="check-image-input" name="{{ widget.name }}" accept="image/*" class="d-none">
+{% if widget.value %}
+    <input type="checkbox" id="check-image-clear-checkbox" name="{{ widget.name }}-clear" class="d-none">
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('check-image-input');
+        const filenameInput = document.getElementById('check-image-filename');
+        const fileButton = document.getElementById('check-image-btn');
+        const clearButton = document.getElementById('check-image-clear-btn');
+        const clearCheckbox = document.getElementById('check-image-clear-checkbox');
+
+        {% if widget.value %}
+            const existingFile = "{{ widget.value }}".split('/').pop();
+            filenameInput.value = existingFile;
+        {% endif %}
+
+        fileInput.addEventListener('change', function () {
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+            filenameInput.value = fileName;
+            if (clearCheckbox) {
+                clearCheckbox.checked = false;
+                clearButton.classList.remove('active');
+            }
+        });
+
+        fileButton.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        clearButton.addEventListener('click', function () {
+            if (clearButton.classList.contains('active')) {
+                clearButton.classList.remove('active'); 
+                if (clearCheckbox) clearCheckbox.checked = false;
+            } else {
+                clearButton.classList.add('active'); 
+                if (clearCheckbox) clearCheckbox.checked = true;
+                filenameInput.value = ''; 
+                fileInput.value = '';
+            }
+        });
+    });
+</script>
+<style>
+    .input-file{
+        background-color: #ffffff; 
+        padding-left: 30px; 
+        border-radius: 100px;
+    }
+</style>

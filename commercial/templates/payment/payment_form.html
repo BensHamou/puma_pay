@@ -1,0 +1,239 @@
+{% extends "main.html" %}
+
+{% block title %}
+{% if payment %} Modification du paiement {% else %} Création d'un paiement {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-left mb-3" style="padding: 0 25px;">
+    <a href="javascript:void(0);" 
+        onclick="window.location=constructUrl('{% url 'payments' %}')" 
+        class="text-decoration-none d-flex align-items-center" 
+        style="letter-spacing: 1.2px;">
+        <i class="fas fa-arrow-left" style="color: #060747; margin-right: 25px"></i>
+        <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">{% if payment %} Modification du paiement REF {{ payment.ref }}{% else %} Ajouter un paiement {% endif %}</p>
+    </a>
+    <div class="d-flex justify-content-end ml-auto">
+        <button type="submit" form="payment-form" class="btn-list d-none d-lg-block">Sauvegarder</button>
+    </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" id="payment-form">
+    {% csrf_token %}
+    <div class="table-responsive" style="padding: 15px;">
+        <div class="row mb-4">
+            <div class="col-lg-6 col-md-6 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Commercial</label>
+                {{ form.commercial }}
+                {% if form.commercial.errors %}
+                    <small class="text-danger">{{ form.commercial.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 col-md-6 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Zone</label>
+                {{ form.zone }}
+                {% if form.zone.errors %}
+                    <small class="text-danger">{{ form.zone.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Client</label>
+                {{ form.client }}
+                {{ form.client_id }}
+                <div id="suggestions" class="sugdiv"></div>
+                {% if form.client.errors %}
+                    <small class="text-danger">{{ form.client.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Date de paiement</label>
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <small class="text-danger">{{ form.date.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Référence</label>
+                {{ form.ref }}
+                {% if form.ref.errors %}
+                    <small class="text-danger">{{ form.ref.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Nom de banque</label>
+                {{ form.bank }}
+                {% if form.bank.errors %}
+                    <small class="text-danger">{{ form.bank.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Type de versement</label>
+                {{ form.payment_type }}
+                {% if form.payment_type.errors %}
+                    <small class="text-danger">{{ form.payment_type.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Montant</label>
+                {{ form.amount }}
+                {% if form.amount.errors %}
+                    <small class="text-danger">{{ form.amount.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-10 col-md-9 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Observation</label>
+                {{ form.observation }}
+                {% if form.observation.errors %}
+                    <small class="text-danger">{{ form.observation.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-2 col-md-3 mb-2">
+                <div class="form-group image-container">
+                    <label for="check_image">Chèque (Image)</label>
+                    {{ form.check_image }}
+                </div>
+            </div>
+        </div>
+        <div class="row m-0">
+            <div class="col-12 text-center m-0">
+                <button type="submit" form="payment-form" class="btn-list-sm d-lg-none">Ajouter un paiement</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    #suggestions {
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        max-height: 250px;
+        overflow-y: scroll;
+        display: none;
+        border-radius: 0 0 10px 10px;
+    }
+      
+    .suggestion {
+        padding: 10px;
+        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+      
+    .suggestion:hover {
+        background-color: #eee;
+    }
+      
+    #suggestions.loading {
+        background-color: #f2f2f2;
+        text-align: center;
+        padding: 20px;
+    }
+      
+    #suggestions.loading .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ccc;
+        border-top: 2px solid #333;
+        border-radius: 50%;
+        animation: spin 2s linear infinite;
+    }
+      
+    @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+    }
+
+    .image-container > a,
+    .image-container > br { 
+        display: none; 
+    }
+
+    .file-input{
+        background-color: #ffffff; 
+        padding-left: 30px; 
+        border-radius: 100px;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imageDivs = document.querySelectorAll('.image-container');
+        
+        imageDivs.forEach(div => {
+          const children = Array.from(div.childNodes);
+          children.forEach(child => {
+            if (child.nodeType === Node.TEXT_NODE && child.textContent.trim() !== "") {
+              child.remove(); 
+            }
+          });
+        });
+    });
+
+    const setValue = (e, selectedId) => {
+        var suggestions = e.parentNode;
+        var fieldIdInput = suggestions.previousElementSibling;
+        var fieldInput = fieldIdInput.previousElementSibling;
+        if (fieldIdInput && fieldInput && suggestions) {
+          fieldIdInput.value = selectedId;
+          fieldInput.value = e.innerHTML;
+          suggestions.innerHTML = '';
+          suggestions.style.display = 'none';
+        }
+    };
+    
+    $(document).ready(function() {
+        $('.search-input').keyup(function() {
+            var suggestions = $(this).siblings('#suggestions');
+            var searchInput = $(this);
+            var searchInputID = $(this).siblings('.search-input-id');
+            searchInputID.val('');
+            if (searchInput.val()) {
+                suggestions.addClass('loading');
+                $.ajax({url: '{% url "live_search" %}', type: 'GET', data: { 'search_term': searchInput.val() }, dataType: 'json',
+                    success: function(response) {
+                        var suggestionsHTML = '';
+                        if (response.length > 0) {
+                            for (var i = 0; i < response.length; i++) {
+                                var result = response[i];
+                                suggestionsHTML += `<div class="suggestion" onClick="setValue(this, ${result.id})">${result.name}</div>`;
+                            }
+                            suggestions.html(suggestionsHTML);
+                            suggestions.removeClass('loading');
+                            suggestions.show();
+                        } else {
+                            suggestionsHTML = '<p>Aucune suggestion trouvée</p>';
+                            suggestions.html(suggestionsHTML);
+                            suggestions.removeClass('loading');
+                            suggestions.show();
+                        }
+                    }
+            });
+            } else {
+                suggestions.empty();
+                suggestions.hide();
+            }
+        });
+        
+        $('form').submit(function (event) {
+            event.preventDefault();
+            $('[disabled]').removeAttr('disabled');
+            this.submit(); 
+        });
+    });
+</script>
+{% endblock %}

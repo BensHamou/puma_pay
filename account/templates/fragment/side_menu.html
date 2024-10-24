@@ -1,0 +1,88 @@
+{% load static %}
+
+<div class="sidebar d-flex flex-column justify-content-between">
+    <div>
+        <div class="text-center mb-5 user-image">
+            <img src="{% static 'img/admin_profile.png' %}" alt="User Image" width="35" height="35">
+        </div>
+        <ul class="nav flex-column flex-grow-1 d-none d-md-flex">
+            <li class="nav-item mb-5">
+                <a class="nav-link" href="{% url 'home' %}">
+                    <i class="fas fa-house m-0 {% if request.resolver_match.url_name == 'home' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-5">
+                <a class="nav-link" href="{% url 'create_payment' %}">
+                    <i class="fas fa-money-bill-transfer m-0 {% if request.resolver_match.url_name == 'create_payment' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item mb-5">
+                <a class="nav-link" href="{% url 'payments' %}">
+                    <i class="fas fa-bars-staggered m-0 {% if request.resolver_match.url_name == 'payments' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item dropdown mb-5">
+                <a class="nav-link dropdown-toggle no-caret" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog {% if request.resolver_match.url_name in 'users,objectives,zones,banks,payment_types' %} active {% endif %}"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right custom-dropdown" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'users' %} active {% endif %}" href="{% url 'users' %}">Utilisateurs</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'objectives' %} active {% endif %}" href="{% url 'objectives' %}">Objectives</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'zones' %} active {% endif %}" href="{% url 'zones' %}">Zone</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'banks' %} active {% endif %}" href="{% url 'banks' %}">Bank</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'payment_types' %} active {% endif %}" href="{% url 'payment_types' %}">Type de Paiment</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="nav flex-row flex-wrap justify-content-around align-items-center d-md-none">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">
+                    <i class="fas fa-house {% if request.resolver_match.url_name == 'home' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'create_payment' %}">
+                    <i class="fas fa-money-bill-transfer m-0 {% if request.resolver_match.url_name == 'create_payment' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'payments' %}">
+                    <i class="fas fa-bars-staggered m-0 {% if request.resolver_match.url_name == 'payments' %} active {% endif %}"></i>
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle no-caret" href="#" id="navbarDropdownSmall" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-cog {% if request.resolver_match.url_name in 'users,objectives,zones,banks,payment_types' %} active {% endif %}"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end custom-dropdown" aria-labelledby="navbarDropdownSmall">
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'users' %} active {% endif %}" href="{% url 'users' %}">Utilisateurs</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'objectives' %} active {% endif %}" href="{% url 'objectives' %}">Objectives</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'zones' %} active {% endif %}" href="{% url 'zones' %}">Zone</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'banks' %} active {% endif %}" href="{% url 'banks' %}">Bank</a></li>
+                    <li><a class="dropdown-item {% if request.resolver_match.url_name == 'payment_types' %} active {% endif %}" href="{% url 'payment_types' %}">Type de Paiment</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-arrow-right-from-bracket m-0"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="logout">
+        <ul class="nav flex-column">
+            <li class="nav-item mb-5">
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <i class="fas fa-arrow-right-from-bracket"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% block scripts %}
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+{% endblock %}

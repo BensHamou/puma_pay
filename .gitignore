@@ -1,0 +1,11 @@
+account/__pycache__/
+vpay
+commercial/__pycache__/
+puma_pay/__pycache__/
+
+*.pyc
+
+account/migrations/*
+!account/migrations/__init__.py
+commercial/migrations/*
+!commercial/migrations/__init__.py

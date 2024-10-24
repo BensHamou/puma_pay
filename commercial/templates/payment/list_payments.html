@@ -1,0 +1,114 @@
+{% extends "main.html" %}
+{% load humanize %}
+
+{% block title %}
+Paramètre Paiements
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3" style="padding: 0 25px;">
+    <div class="col-12">
+        <p class="mb-4 page-title" style="color: #0082cd;">Liste des paiements</p>
+    </div>
+    <div class="col-12">
+        <form method="GET">
+            <div class="row justify-content-between align-items-center mb-3">
+                <div class="col-lg-3 col-12 mb-3">
+                    {{ filteredData.form.search }}
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    {{ filteredData.form.state }}
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    {{ filteredData.form.zone }}
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    {{ filteredData.form.start_date }}
+                </div>
+                <div class="col-lg-2 col-6 mb-3">
+                    {{ filteredData.form.end_date }}
+                </div>
+                <div class="col-lg-1 col-6 mb-3">
+                    <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
+                           class="form-control" style="width: 100%; height: 40px; padding-left: 30px; border-radius: 100px;" placeholder="Page Size">
+                </div>
+                <div class="col-lg-12 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center mt-3">
+                    <button type="submit" class="btn-list">Appliquer</button>
+                    <a href="{% url 'create_payment' %}" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Ajouter</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive p-0 m-0">
+    <table class="table table-borderless">
+        <thead>
+            <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
+                <th class="table-header">ID</th>
+                <th class="table-header">Référence</th>
+                <th class="table-header">Montant</th>
+                <th class="table-header">Commercial</th>
+                <th class="table-header">Client</th>
+                <th class="table-header">Date</th>
+                <th class="table-header">État</th>
+                <th class="table-header" style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if page %}
+                {% for payment in page %}
+                <tr style="color: #5d5d5d;">
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.id }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.ref }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.amount|intcomma }} DZD</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.state }}</td>
+                    <td class="text-center p-0 m-0">
+                        <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" 
+                            class="btn" style="color: #5d5d5d;">
+                            <i class="far fa-pen-to-square"></i>
+                        </a>
+                        <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                            class="btn" style="color: #5d5d5d;">
+                            <i class="far fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center" style="color: #5d5d5d;">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% if page.has_other_pages %}
+    {% include 'pagination.html' %}
+{% endif %}
+
+<script>
+    function confirmPaymentDel(paymentId, paymentRef) {
+        swal({
+            title: `Confirmation de la suppression.`,
+            text: `Etes-vous sûr que vous voulez supprimer le paiement référence ${paymentRef}?`,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Oui",
+            cancelButtonText: "Non",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }, function(isConfirm) {
+            if (isConfirm) {
+                window.location.href = "{% url 'delete_payment' 0 %}".replace('0', paymentId);
+            }
+        });
+    }
+</script>
+
+{% endblock %}
