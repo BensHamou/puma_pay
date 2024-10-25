@@ -5,7 +5,7 @@ from .models import *
 from django.db.models import Q
 
 class BankFilter(FilterSet):
-    search = CharFilter(method='filter_search', widget=forms.TextInput(attrs=getAttrs('search', 'Rechercher Bank..') ))
+    search = CharFilter(method='filter_search', widget=forms.TextInput(attrs=getAttrs('search', 'Rechercher Banque..') ))
     def filter_search(self, queryset, name, value):
         return queryset.filter(Q(designation__icontains=value)).distinct()
     class Meta:
@@ -28,13 +28,14 @@ class PaymentFilter(FilterSet):
     start_date = DateFilter(field_name='date', lookup_expr='gte', widget=forms.widgets.DateInput(format=('%Y-%m-%d'), attrs=getAttrs('date')))
     end_date = DateFilter(field_name='date', lookup_expr='lte', widget=forms.widgets.DateInput(format=('%Y-%m-%d'), attrs=getAttrs('date')))
     zone = ModelChoiceFilter(queryset=Zone.objects.all(), widget=forms.Select(attrs= getAttrs('select')), empty_label="Zone")
+    payment_type = ModelChoiceFilter(queryset=PaymentType.objects.all(), widget=forms.Select(attrs= getAttrs('select')), empty_label="Type de Paiement")
 
     def filter_search(self, queryset, name, value):
-        return queryset.filter(Q(ref__icontains=value) | Q(commercial__fullname__icontains=value) | Q(usine__designation__icontains=value)).distinct()
+        return queryset.filter(Q(ref__icontains=value) | Q(commercial__fullname__icontains=value) | Q(zone__designation__icontains=value) | Q(bank__designation__icontains=value) | Q(payment_type__designation__icontains=value)).distinct()
 
     class Meta:
         model = Payment
-        fields = ['search', 'state', 'start_date', 'end_date', 'zone']
+        fields = ['search', 'state', 'start_date', 'end_date', 'zone', 'payment_type']
         
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)

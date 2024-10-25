@@ -7,7 +7,7 @@ Paramètre Zones
 {% block content %}
 <div class="row mb-3" style="padding: 0 25px;">
     <div class="col-12">
-        <p class="mb-4 page-title" style="color: #0082cd;">Liste des zones</p>
+        <p class="mb-4 page-title">Liste des zones</p>
     </div>
     <div class="col-12">
         <form method="GET">
@@ -17,7 +17,7 @@ Paramètre Zones
                 </div>
                 <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center">
                     <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
-                           class="form-control" style="width: 15%; margin-right: 10px; border-radius: 100px;">
+                           class="form-control page-size">
                     <button type="submit" class="btn-list mt-lg-0 mt-2" style='margin-left: 5px;'>Appliquer</button>
                     <a href="{% url 'create_zone' %}" class="btn btn-list mt-lg-0 mt-2">Ajouter</a>
                 </div>

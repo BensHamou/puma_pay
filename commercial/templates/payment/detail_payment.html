@@ -86,18 +86,18 @@
 
 <div class="d-flex justify-content-center" style="padding: 15px;">
     {% if is_draft and is_admin %}
-        <button class="btn btn-success mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
-        <button class="btn btn-danger" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
+        <button class="btn-validate mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
+        <button class="btn-cancel" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
     {% elif is_admin and is_confirmed %}
-        <button class="btn btn-success mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
-        <button class="btn btn-danger" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
+        <button class="btn-validate mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
+        <button class="btn-cancel" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
     {% endif %}
     {% if is_draft and is_commercial %}
-        <button class="btn btn-success mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
-        <button class="btn btn-danger" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
+        <button class="btn-validate mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
+        <button class="btn-cancel" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
     {% elif is_back_office and is_confirmed %}
-        <button class="btn btn-success mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
-        <button class="btn btn-danger" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
+        <button class="btn-validate mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
+        <button class="btn-cancel" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
     {% endif %}
 </div>
 

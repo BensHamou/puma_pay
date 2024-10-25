@@ -80,8 +80,8 @@ DATABASES = {
        'NAME': 'PumaPay',
        'USER': 'puma_pay',
        'PASSWORD': 'puma_pay',
-       'HOST': '10.10.10.101',
-       'PORT': '5434',
+       'HOST': '127.0.0.1',
+       'PORT': '5432',
     }
 }
 

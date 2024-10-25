@@ -39,7 +39,7 @@ def refreshUserList(request):
     else:
         print('Error: could not fetch data from API')
     cache_param = str(uuid.uuid4())
-    url_path = reverse('new_users')
+    url_path = reverse('users')
     redirect_url = f'{url_path}?cache={cache_param}'
     return redirect(redirect_url)
 

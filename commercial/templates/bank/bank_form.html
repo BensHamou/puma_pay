@@ -15,7 +15,7 @@
         <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Liste des banques</p>
     </a>
     <div class="d-flex justify-content-end ml-auto">
-        <button type="submit" form="bank-form" class="btn-list">Sauvegarder</button>
+        <button type="submit" form="bank-form" class="btn-list d-none d-lg-block">Sauvegarder</button>
     </div>
 </div>
 
@@ -29,6 +29,11 @@
                 {% if form.designation.errors %}
                     <small class="text-danger">{{ form.designation.errors }}</small>
                 {% endif %}
+            </div>
+        </div>
+        <div class="row m-0">
+            <div class="col-12 text-center m-0">
+                <button type="submit" form="bank-form" class="btn-list-sm d-lg-none">Ajouter une banque</button>
             </div>
         </div>
     </div>

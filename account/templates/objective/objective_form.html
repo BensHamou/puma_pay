@@ -15,7 +15,7 @@
         <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Liste des objectifs</p>
     </a>
     <div class="d-flex justify-content-end ml-auto">
-        <button type="submit" form="objective-form" class="btn-list">Sauvegarder</button>
+        <button type="submit" form="objective-form" class="btn-list d-none d-lg-block">Sauvegarder</button>
     </div>
 </div>
 
@@ -45,6 +45,11 @@
                 {% if form.amount.errors %}
                     <small class="text-danger">{{ form.amount.errors }}</small>
                 {% endif %}
+            </div>
+        </div>
+        <div class="row m-0">
+            <div class="col-12 text-center m-0">
+                <button type="submit" form="objective-form" class="btn-list-sm d-lg-none">Ajouter un objectif</button>
             </div>
         </div>
     </div>

@@ -5,6 +5,8 @@ puma_pay/__pycache__/
 
 *.pyc
 
+media/
+
 account/migrations/*
 !account/migrations/__init__.py
 commercial/migrations/*
