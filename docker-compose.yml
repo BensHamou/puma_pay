@@ -58,9 +58,9 @@ services:
             crond -f"
 volumes:
   db_data:
-# networks:
-#   default:
-#     driver: bridge
-#     ipam:
-#       config:
-#         - subnet: 172.16.67.0/24
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.44.0/24
