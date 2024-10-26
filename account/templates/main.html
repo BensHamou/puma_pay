@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PUMA GS{% endblock %}</title>
+    <title>{% block title %}PUMA Paiement{% endblock %}</title>
     {% load bootstrap5 %} 
     {% bootstrap_css %} 
     {% bootstrap_javascript %}
@@ -12,6 +12,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="stylesheet" href="{% static 'fontawesomefree/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/select.css' %}">
@@ -299,6 +300,29 @@
         }
         .nav-link.active i {
             color: blue !important;
+        }
+        .select3 + .select2-container .select2-selection {
+            border-radius: 50px !important;
+        }
+        .select3 + .select2-container .select2-search--dropdown .select2-search__field {
+            border-radius: 100px !important;
+        }
+        .select3 + .select2-container .select2-search{
+            border-radius: 100px !important;
+        }
+        .select3 + .select2-container .select2-selection__choice {
+            border-radius: 100px !important;
+            padding: 4px 10px;
+            margin: 3px 5px;
+        }
+        .listBadge{
+            background-color: #f5f5f5; 
+            padding: 8px; 
+            margin-right: 5px;
+        }
+        .listBadgeText{
+            font-size: 14px;
+            color: #5d5d5d;
         }
         {% block styles %}
         {% endblock %}

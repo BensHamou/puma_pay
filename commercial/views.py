@@ -3,13 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import Paginator
-from django.core.mail import EmailMessage
-from django.utils.html import strip_tags
 from django.http import JsonResponse
 from django.contrib import messages 
-from django.conf import settings
+from django.db.models import Sum
 from account.decorators import *
 from django.urls import reverse
+from datetime import timedelta 
 from .utils import getClientId
 from functools import wraps
 from .filters import *
@@ -19,19 +18,57 @@ from .forms import *
 def check_creator(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
+        if request.user.has_admin():
+            return view_func(request, *args, **kwargs)
         paytment_id = kwargs.get('pk')
         payment = Payment.objects.get(id=paytment_id)
-        if (payment.commercial != request.user or request.user.role != "Commercial") and request.user.role != 'Admin':
-            return render(request, '403.html', status=403)
-        return view_func(request, *args, **kwargs)
+        if request.user.has_commercial() and payment.commercial == request.user and payment.state == 'Brouillon':
+            return view_func(request, *args, **kwargs)
+        return render(request, '403.html', status=403)
     return wrapper
 
 def check_validator(view_func):
     def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated and request.user.role in ['Admin', 'Back Office']:
+        if request.user.has_admin():
             return view_func(request, *args, **kwargs)
-        else:
-            return render(request, '403.html', status=403)
+        paytment_id = kwargs.get('pk')
+        payment = Payment.objects.get(id=paytment_id)
+        if request.user.has_backoffice() and payment.zone in request.user.zones.all() and payment.state == 'Confirmé':
+            return view_func(request, *args, **kwargs)
+        return render(request, '403.html', status=403)
+    return wrapper
+
+def can_view_payment(view_func):
+    def wrapper(request, *args, **kwargs):
+        paytment_id = kwargs.get('pk')
+        payment = Payment.objects.get(id=paytment_id)
+        if request.user.has_admin():
+            return view_func(request, *args, **kwargs)
+        if request.user.has_backoffice() and payment.zone in request.user.zones.all():
+            return view_func(request, *args, **kwargs)
+        if request.user.has_commercial() and payment.commercial == request.user:
+            return view_func(request, *args, **kwargs)
+        return render(request, '403.html', status=403)
+    return wrapper
+
+def can_create(view_func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.has_admin() or request.user.has_commercial():
+            return view_func(request, *args, **kwargs)
+        return render(request, '403.html', status=403)
+    return wrapper
+
+def can_edit(view_func):
+    def wrapper(request, *args, **kwargs):
+        paytment_id = kwargs.get('pk')
+        if not paytment_id:
+            paytment_id = kwargs.get('id')
+        payment = Payment.objects.get(id=paytment_id)
+        if request.user.has_admin():
+            return view_func(request, *args, **kwargs)
+        if request.user.has_commercial() and payment.commercial == request.user:
+            return view_func(request, *args, **kwargs)
+        return render(request, '403.html', status=403)
     return wrapper
 
 # BANKS
@@ -151,15 +188,36 @@ def editPaymentTypeView(request, id):
 # PAYMENTS
 
 @login_required(login_url='login')
-@admin_required
 def listPaymentView(request):
-    payments = Payment.objects.all().order_by('-date_modified')
-    filteredData = PaymentFilter(request.GET, queryset=payments)
+
+    if request.user.has_admin():
+        payments = Payment.objects.all().order_by('-date_modified')
+    elif request.user.has_commercial():
+        payments = Payment.objects.filter(commercial=request.user).order_by('-date_modified')
+    else:
+        payments = Payment.objects.filter(zone__in=request.user.zones.all()).order_by('-date_modified')
+
+    time_filter = request.GET.get('time_filter')
+    if time_filter == 'today':
+        payments = payments.filter(date=timezone.now().date()) 
+    elif time_filter == 'week':
+        start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+        payments = payments.filter(date__gte=start_of_week)
+    elif time_filter == 'month':
+        payments = payments.filter(date__month=timezone.now().month)
+
+    filteredData = PaymentFilter(request.GET, queryset=payments, user=request.user)
+    total_lines = filteredData.qs.count()
     payments = filteredData.qs
     paginator = Paginator(payments, request.GET.get('page_size', 12))
+
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
-    context = {'page': page, 'filteredData': filteredData}
+    fetched_lines = len(page.object_list)
+
+    widgets = getWidgets(request)
+
+    context = {'page': page, 'filteredData': filteredData, 'fetched_lines': fetched_lines, 'total_lines': total_lines, 'widgets': widgets}
     return render(request, 'list_payments.html', context)
 
 @login_required(login_url='login')
@@ -175,7 +233,7 @@ def deletePaymentView(request, id):
         return redirect(getRedirectionURL(request, reverse('payments')))
 
 @login_required(login_url='login')
-@admin_required
+@can_create
 def createPaymentView(request):
     form = PaymentForm(user=request.user)
     if request.method == 'POST':
@@ -192,14 +250,18 @@ def createPaymentView(request):
     return render(request, 'payment_form.html', context)
 
 @login_required(login_url='login')
-@admin_required
+@can_edit
 def editPaymentView(request, id):
     payment = get_object_or_404(Payment, id=id)
+    original_image = payment.check_image 
     form = PaymentForm(instance=payment, user=request.user)
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES, instance=payment, user=request.user)
         if form.is_valid():
-            form.save(user=request.user)
+            payment = form.save(user=request.user, commit=False)
+            if not payment.check_image and original_image:
+                original_image.delete(save=False)
+            payment.save()
             url_path = reverse('detail_payment', args=[payment.id])
             return redirect(getRedirectionURL(request, url_path))
         else:
@@ -208,7 +270,7 @@ def editPaymentView(request, id):
     return render(request, 'payment_form.html', context)
 
 @login_required(login_url='login')
-@admin_required
+@can_view_payment
 def detail_payment(request, pk):
     payment = get_object_or_404(Payment, pk=pk)    
     
@@ -308,10 +370,79 @@ def changeState(request, pk, action):
 
 def send_confirmation_email(payment):
     subject = f'Paiement REF[{payment.ref}]'
-    html_message = render_to_string('fragments/payment_confirmation.html', {'payment': payment})
-    email = EmailMultiAlternatives(subject, None, 'Puma Paiement', ['mohammed.benslimane@groupe-hasnaoui.com'])
+    html_message = render_to_string('fragment/payment_confirmation.html', {'payment': payment})
+
+    addresses = payment.zone.address.split('&')
+    if not addresses:
+        addresses = ['mohammed.senoussaoui@grupopuma-dz.com']
+    
+    email = EmailMultiAlternatives(subject, None, 'Puma Paiement', addresses)
     email.attach_alternative(html_message, "text/html") 
     if payment.check_image:
         email.attach(payment.check_image.name, payment.check_image.read(), 'image/jpeg')
 
     email.send()
+
+def getWidgets(request):
+    user_first_zone = request.user.zones.first()
+    current_month = timezone.now().month
+    current_year = timezone.now().year
+    payments = Payment.objects.filter(zone=user_first_zone, state='Validé')
+    try:
+        monthly_objective = Objective.objects.get(zone=user_first_zone, month__month=current_month, month__year=current_year)
+        monthly_objective_value = monthly_objective.amount 
+    except Objective.DoesNotExist:
+        monthly_objective_value = 0
+    weekly_objective_value = round(monthly_objective_value * 7 / 30)
+
+    start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+    weekly_payments = payments.filter(date__gte=start_of_week)
+    weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
+    weekly_objective_value = round(monthly_objective_value * 7 / 30)
+    total_weekly_payments = weekly_payments.count()
+
+    monthly_payments = payments.filter(date__month=current_month, date__year=current_year)
+    monthly_payment_sum = monthly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
+    total_monthly_payments = monthly_payments.count()
+
+    widget_1 = {
+        'title': 'Récap Hebdomadaire',
+        'elements': [
+            {'label': 'Objectif', 'value': format_amount(weekly_objective_value)}, 
+            {'label': 'Somme des paiements', 'value': format_amount(weekly_payment_sum), 'color': getColor(weekly_objective_value, weekly_payment_sum)},
+            {'label': 'Total des paiements', 'value': f"{total_weekly_payments} paiements"},
+        ],
+        'image': "'img/hebdomadaire'",
+        'active': True
+    }
+
+    widget_2 = {
+        'title': 'Récap Mensuelle',
+        'elements': [
+            {'label': 'Objectif mensuelle', 'value': format_amount(monthly_objective_value)},
+            {'label': 'Somme des paiements', 'value': format_amount(monthly_payment_sum), 'color': getColor(monthly_objective_value, monthly_payment_sum)},
+            {'label': 'Total des paiements', 'value': f"{total_monthly_payments} paiements"},
+        ],
+        'image': "'img/mensuelle'",
+        'active': False
+    }
+    return [widget_1, widget_2]
+
+def getColor(A, B):
+    C = A  - B
+    if B >= A:
+        return "green"
+    elif C >= 50000: 
+        return "red"
+    elif C > 0: 
+        return "orange"
+    else:
+        return "blue" 
+
+def format_amount(amount):
+    if amount >= 1_000_000:  # Check for millions first
+        return f"{amount / 1_000_000:,.1f}M DZD"
+    elif amount >= 1000:
+        return f"{amount / 1000:,.1f}K DZD"
+    else:
+        return f"{amount:,.2f} DZD"

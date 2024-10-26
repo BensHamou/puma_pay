@@ -20,6 +20,11 @@ def loginerror(value, word):
     return str(value)[len(word):]
 
 def login_success(request):
+    user = request.user
+    if user.has_admin() or user.has_commercial() or user.has_backoffice():
+        return redirect("payments")
+    elif user.has_admin():
+        return redirect("home")
     return redirect("home")
 
 def admin_required(view_func):

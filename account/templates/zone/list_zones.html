@@ -15,11 +15,11 @@ Paramètre Zones
                 <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column mb-lg-0 mb-3">
                     {{ filteredData.form.search }}
                 </div>
-                <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center">
+                <div class="col-lg-6 col-12 d-flex flex-row justify-content-lg-end justify-content-start align-items-center">
                     <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
                            class="form-control page-size">
-                    <button type="submit" class="btn-list mt-lg-0 mt-2" style='margin-left: 5px;'>Appliquer</button>
-                    <a href="{% url 'create_zone' %}" class="btn btn-list mt-lg-0 mt-2">Ajouter</a>
+                    <button type="submit" class="btn-list ml-2">Appliquer</button>
+                    <a href="{% url 'create_zone' %}" class="btn btn-list ml-2">Ajouter</a>
                 </div>
             </div>
         </form>
@@ -32,6 +32,7 @@ Paramètre Zones
             <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
                 <th class="table-header">ID</th>
                 <th class="table-header">Désignation</th>
+                <th class="table-header">Address</th>
                 <th class="table-header" style="text-align: center;">Actions</th>
             </tr>
         </thead>
@@ -41,6 +42,7 @@ Paramètre Zones
                 <tr style="color: #5d5d5d;">
                     <td class="table-text">{{ zone.id }}</td>
                     <td class="table-text">{{ zone.designation }}</td>
+                    <td class="table-text">{{ zone.address }}</td>
                     <td class="text-center p-0 m-0">
                         <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_zone' zone.id %}')" 
                             class="btn" style="color: #5d5d5d;">

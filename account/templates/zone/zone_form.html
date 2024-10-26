@@ -23,11 +23,18 @@
     {% csrf_token %}
     <div class="table-responsive" style="padding: 15px;">
         <div class="row mb-4">
-            <div class="col-lg-12 col-md-12 mb-2">
+            <div class="col-lg-6 col-md-12 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Nom de la zone</label>
                 {{ form.designation }}
                 {% if form.designation.errors %}
                     <small class="text-danger">{{ form.designation.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 col-md-12 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Address destinataires concernés</label>
+                {{ form.address }}
+                {% if form.address.errors %}
+                    <small class="text-danger">{{ form.address.errors }}</small>
                 {% endif %}
             </div>
         </div>

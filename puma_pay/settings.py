@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    'django_cleanup.apps.CleanupConfig',
     "account",
     "commercial",
     "bootstrap5",
@@ -58,7 +59,7 @@ TEMPLATES = [
         "DIRS": [os.path.join(BASE_DIR, 'account', 'templates', 'user'), os.path.join(BASE_DIR, 'account', 'templates', 'fragment'),
                  os.path.join(BASE_DIR, 'account', 'templates', 'zone'), os.path.join(BASE_DIR, 'account', 'templates', 'objective'),
                  os.path.join(BASE_DIR, 'commercial', 'templates', 'payment'), os.path.join(BASE_DIR, 'commercial', 'templates', 'bank'),
-                 os.path.join(BASE_DIR, 'commercial', 'templates', 'payment_type')],
+                 os.path.join(BASE_DIR, 'commercial', 'templates', 'payment_type'), os.path.join(BASE_DIR, 'commercial', 'templates', 'fragment')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

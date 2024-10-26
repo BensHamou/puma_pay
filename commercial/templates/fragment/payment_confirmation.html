@@ -1,0 +1,14 @@
+{% load humanize %}
+<p>Bonjour l'équipe,</p>
+<p>Un paiement a été créé par <b style="color: #002060">{{ payment.commercial }}</b> ({{ payment.zone }}) le <b>{{ payment.date|date:"d/m/Y" }}</b> :</p>
+
+<ul>
+    <li><b>Client :</b> <b style="color: #002060">{{ payment.client }}</b></li>
+    <li><b>Date de paiement :</b> <b style="color: #002060">{{ payment.date|date:"d/m/Y" }}</b></li>
+    <li><b>Banque :</b> {{ payment.bank }}</b></li>
+    <li><b>Type de paiement :</b> <b style="color: #002060">{{ payment.payment_type }}</b></li>
+    <li><b>Référence chèque :</b> <b style="color: #002060">{{ payment.ref }}</b></li>
+    <li><b>Montant :</b> <b style="color: #002060">{{ payment.amount|intcomma }} DZD</b></li>
+</ul>
+
+<p>Cordialement,</p>

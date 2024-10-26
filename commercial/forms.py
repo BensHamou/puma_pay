@@ -4,6 +4,7 @@ from django.db.models import Q
 from django import forms
 from .models import *
 from django.forms import ClearableFileInput
+from django.core.validators import RegexValidator
 
 class BankForm(BaseModelForm):
     class Meta:
@@ -20,7 +21,7 @@ class PaymentTypeForm(BaseModelForm):
     designation = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Type de Paiment')))
 
 class CustomClearableFileInput(ClearableFileInput):
-    template_name = 'fragments/custom_clearable_file_input.html'
+    template_name = 'fragment/custom_clearable_file_input.html'
 
 class PaymentForm(BaseModelForm):
     class Meta:
@@ -35,10 +36,9 @@ class PaymentForm(BaseModelForm):
     zone = forms.ModelChoiceField(queryset=Zone.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Zone")
     bank = forms.ModelChoiceField(queryset=Bank.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Banque")
     payment_type = forms.ModelChoiceField(queryset=PaymentType.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Type de Paiment")
-    ref = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Référence')), required=False)
+    ref = forms.CharField(widget=forms.NumberInput(attrs=getAttrs('control', 'Référence')), required=False, validators=[RegexValidator(r'^\d+$', 'Only numbers are allowed.')] )
     date = forms.DateField(initial=timezone.now().date(), widget=forms.widgets.DateInput(attrs= getAttrs('date'), format='%Y-%m-%d'))
     amount = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant', {'min': 0.01})))
-    # check_image = forms.ImageField(widget=forms.ClearableFileInput(attrs={'accept': 'image/*'}), required=False)
     check_image = forms.ImageField(widget=CustomClearableFileInput(attrs={'class': 'd-none', 'id': 'check-image-input', 'accept': 'image/*'}), required=False)
     observation = forms.CharField(widget=forms.Textarea(attrs= getAttrs('textarea','Observation')), required=False)
 

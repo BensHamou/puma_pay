@@ -11,7 +11,7 @@ def getAttrs(type, placeholder='', other={}):
         'login': {'class': 'form-control', 'style': 'padding-left: 30px; background-color: white; height: 45px; border: 1px solid #ccc; border-radius: 100px;', 'placeholder': ''},
         'controlID': {'class': 'form-control search-input-id', 'autocomplete': "off", 'style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;', 'placeholder': ''},
         'controlSearch': {'class': 'form-control search-input', 'autocomplete': "off", 'style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;', 'placeholder': ''},
-        'search': {'class': 'form-control mb-lg-0 mb-3', 'style': 'padding-left: 30px; margin-right: 10px; border-radius: 100px;', 'type': 'text', 'placeholder': '', 'id': 'search'},
+        'search': {'class': 'form-control mb-lg-0 mb-3', 'style': 'padding-left: 30px; margin-right: 10px; border-radius: 100px; max-width: 500px', 'type': 'text', 'placeholder': '', 'id': 'search'},
         'select': {'class': 'form-select', 'style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;'},
         'select2': {'class': 'form-select select2', 'style': 'background-color: #ffffff; padding-left: 30px; width: 100%; border-radius: 100px;'},
         'select3': {'class': 'form-select select3', 'style': 'background-color: #ffffff; padding-left: 30px; width: 100%; border-radius: 100px;'},
@@ -47,10 +47,10 @@ class UserForm(BaseModelForm):
         model = User
         fields = ['username', 'email', 'is_admin', 'first_name', 'last_name', 'role', 'zones']
 
-    username = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Nom d\'utilisateur')))
-    last_name = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Nom de famille')))
-    first_name = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Prénom')))
-    email = forms.EmailField(widget=forms.EmailInput(attrs=getAttrs('control', 'Email')))
+    username = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Nom d\'utilisateur')), disabled=True)
+    last_name = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Nom de famille')), disabled=True)
+    first_name = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Prénom')), disabled=True)
+    email = forms.EmailField(widget=forms.EmailInput(attrs=getAttrs('control', 'Email')), disabled=True)
     role = forms.ChoiceField(choices=User.ROLE_CHOICES, widget=forms.Select(attrs=getAttrs('select')))
     zones = forms.ModelMultipleChoiceField(queryset=Zone.objects.all(), widget=forms.SelectMultiple(attrs=getAttrs('select3')), required=False)
     is_admin = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
@@ -70,9 +70,10 @@ class CustomLoginForm(AuthenticationForm):
 class ZoneForm(BaseModelForm):
     class Meta:
         model = Zone
-        fields = ['designation']
+        fields = ['designation', 'address']
 
     designation = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Nom de la zone')))
+    address = forms.CharField(widget=forms.TextInput(attrs=getAttrs('control', 'Address')))
 
 
 

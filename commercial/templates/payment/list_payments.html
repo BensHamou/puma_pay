@@ -1,5 +1,6 @@
 {% extends "main.html" %}
 {% load humanize %}
+{% load static %}
 
 {% block title %}
 Paramètre Paiements
@@ -7,10 +8,11 @@ Paramètre Paiements
 
 {% block content %}
 <div class="row mb-3" style="padding: 0 25px;">
-    <div class="col-12">
+    <div class="col-12 d-none d-lg-block">
         <p class="mb-4 page-title">Liste des paiements</p>
     </div>
-    <div class="col-12">
+
+    <div class="col-12 d-none d-lg-block">
         <form method="GET">
             <div class="row justify-content-between align-items-center mb-3">
                 <div class="col-lg-2 col-md-6 col-12 mb-3">
@@ -31,29 +33,79 @@ Paramètre Paiements
                 <div class="col-lg-2 col-md-6 col-12 mb-3">
                     {{ filteredData.form.end_date }}
                 </div>
-                <div class="col-lg-12 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center mt-3">
-                    <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" class="form-control" 
-                        style="width: 110px; height: 30px; padding-left: 30px; border-radius: 100px;" placeholder="Page Size">
-                    <button type="submit" class="btn-list ml-lg-3 mt-lg-0 mt-2">Appliquer</button>
-                    <a href="{% url 'create_payment' %}" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Ajouter</a>
+                <div class="col-lg-12 col-12 d-flex flex-lg-row flex-column justify-content-between align-items-center mt-3">
+                    <p class="text-muted mb-0 mb-lg-0 order-2 order-lg-1 w-100 text-lg-left text-center mt-3 mt-lg-0">
+                        Affichage <span style="color: #3d83ef">{{ fetched_lines }}</span> depuis <span style="color: #3d83ef">{{ total_lines }}</span> résultats
+                    </p>
+                    <div class="d-flex flex-row justify-content-lg-end justify-content-between w-100 order-1 order-lg-2">
+                        <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" class="form-control ml-lg-3 mt-lg-0 mt-2 page-size" placeholder="Page Size">
+                        <button type="submit" class="btn-list ml-lg-3 mt-lg-0 mt-2">Appliquer</button>
+                        <a href="{% url 'create_payment' %}" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Ajouter</a>
+                    </div>
                 </div>
             </div>
         </form>
     </div>
+    {% include 'widget.html' %}
+    <div class="payment-list-container"> 
+        <div class="payment-section mt-4 d-lg-none">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="section-title">Transactions <i class="fas fa-chevron-right fa-sm"></i></h5>
+            </div>
+            <form method="GET" action="."> {% csrf_token %} 
+                <div class="d-flex justify-content-end align-items-center mb-2"> 
+                    <div class="filter-controls d-flex"> 
+                        <div class="input-group me-2">
+                            <input type="number" name="page_size" class="form-control page-size" style="height: 35px;" placeholder="Page Size" value="{{ request.GET.page_size|default:'12' }}">
+                        </div>
+                        <select name="time_filter" class="form-select me-2" style="height: 35px; border: 1px solid #1A3257; border-radius: 15px;">
+                            <option value="">Tous</option>
+                            <option value="today" {% if request.GET.time_filter == 'today' %}selected{% endif %}>Aujourd'hui</option>
+                            <option value="week" {% if request.GET.time_filter == 'week' %}selected{% endif %}>Semaine</option>
+                            <option value="month" {% if request.GET.time_filter == 'month' %}selected{% endif %}>Mois</option>
+                        </select>
+                        <button type="submit" class="btn-list" style="height: 35px;"><i class="fas fa-filter"></i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="payment-list">
+                {% for payment in page %}
+                    <div class="payment-item d-flex justify-content-between align-items-center p-2" onclick="window.location.href='{% url 'detail_payment' payment.id %}'">
+                        <div class="payment-info d-flex align-items-center">
+                            <img src="{% static 'img/client_image.png' %}" alt="Client Image" class="client-image rounded-circle mr-3">
+                            <div>
+                                <p class="client-name mb-1">{{ payment.client }}</p>
+                                <p class="payment-date text-muted">{{ payment.date_created|date:"M d, Y H:i" }}</p>
+                            </div>
+                        </div>
+                        <div class="payment-amount font-weight-bold
+                            {% if payment.state == 'Validé' %}text-green{% endif %}
+                            {% if payment.state == 'Refusé' %}text-red{% endif %}
+                            {% if payment.state == 'Brouillon' %}text-gray{% endif %}">
+                            {{ payment.amount|intcomma }} DZD
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if page.has_other_pages %}
+                {% include 'pagination.html' %}
+            {% endif %}
+        </div>
+    </div> 
 </div>
 
-<div class="table-responsive p-0 m-0">
+<div class="table-responsive p-0 m-0 d-none d-lg-block">
     <table class="table table-borderless">
         <thead>
             <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
                 <th class="table-header">ID</th>
                 <th class="table-header">Référence</th>
-                <th class="table-header">Montant</th>
-                <th class="table-header">Commercial</th>
+                <th class="table-header {% if user.has_commercial %}d-none{% endif %}">Commercial</th>
                 <th class="table-header">Client</th>
+                <th class="table-header">Méthode</th>
                 <th class="table-header">Date</th>
-                <th class="table-header">État</th>
-                <th class="table-header" style="text-align: center;">Actions</th>
+                <th class="table-header" style="text-align: right;">Montant</th>
+                <th class="table-header {% if not user.has_commercial and not user.has_admin %}d-none{% endif %}" style="text-align: center;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -62,50 +114,122 @@ Paramètre Paiements
                 <tr style="color: #5d5d5d;">
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.id }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.ref }}</td>
-                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.amount|intcomma }} DZD</td>
-                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }}</td>
+                    <td class="table-text {% if user.has_commercial %}d-none{% endif %}" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }} ({{ payment.zone }})</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payment_type }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date }}</td>
-                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.state }}</td>
-                    <td class="text-center p-0 m-0">
-                        <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" 
-                            class="btn" style="color: #5d5d5d;">
-                            <i class="far fa-pen-to-square"></i>
-                        </a>
-                        <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
-                            class="btn" style="color: #5d5d5d;">
-                            <i class="far fa-trash-can"></i>
-                        </a>
+                    <td class="table-text" style="cursor: pointer; color: {% if payment.state == 'Validé' %}green{% endif %} 
+                        {% if payment.state == 'Refusé' %}red{% endif %}{% if payment.state == 'Brouillon' %}gray; font-style: italic{% endif %}; font-weight: 700; text-align: right;" 
+                        onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.amount|intcomma }} DZD</td>
+                    <td class="text-center p-0 m-0 {% if not user.has_commercial and not user.has_admin %}d-none{% endif %}">
+                        {% if user.has_admin %}
+                            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
+                                class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                                class="btn" style="color: #5d5d5d;"><i class="far fa-trash-can"></i></a>
+                        {% elif user.has_commercial and payment.state == 'Brouillon' %} 
+                            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
+                                class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                                class="btn" style="color: #5d5d5d;"><i class="far fa-trash-can"></i></a>
+                        {% else %}
+                            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
+                                class="btn disabled" style="color: #5d5d5d; cursor: not-allowed;"><i class="far fa-pen-to-square"></i></a>
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                                class="btn disabled" style="color: #5d5d5d; cursor: not-allowed;"><i class="far fa-trash-can"></i></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             {% else %}
-                <tr>
-                    <td colspan="8" class="text-center" style="color: #5d5d5d;">Aucun enregistrement trouvé</td>
-                </tr>
+                <tr><td colspan="8" class="text-center">Aucun résultat</td></tr>
             {% endif %}
         </tbody>
     </table>
+
+    {% if page.has_other_pages %}
+        {% include 'pagination.html' %}
+    {% endif %}
 </div>
 
-{% if page.has_other_pages %}
-    {% include 'pagination.html' %}
-{% endif %}
+<style>
+    .payment-list-container {
+        max-height: 450px;
+        overflow-y: auto;
+      
+    }
+    .payment-section .section-title {
+        font-family: Montserrat;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 24.38px;
+        text-align: left;
+        color: #3d83ef;
+    }
+    
+    .payment-list .payment-item {
+        background-color: #ffffff;
+        border-bottom: 1px solid #e0e0e0;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .payment-list .payment-item:hover {
+        background-color: #f7f7f7;
+    }
+    
+    .payment-info {
+        display: flex;
+        align-items: center;
+    }
+    
+    .client-image {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .client-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    .payment-date {
+        font-size: 0.8rem;
+        color: #7d7d7d;
+    }
+    
+    .payment-amount {
+        font-size: 1rem;
+        width: 30%;
+        text-align: right;
+    }
+
+    .text-green{
+        color: green;
+    }
+    .text-red{
+        color: red;
+    }
+    .text-gray{
+        color: gray;
+        font-style: italic;
+    }
+    
+</style>
 
 <script>
     function confirmPaymentDel(paymentId, paymentRef) {
         swal({
-            title: `Confirmation de la suppression.`,
+            title: "Confirmation de la suppression.",
             text: `Etes-vous sûr que vous voulez supprimer le paiement référence ${paymentRef}?`,
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
             confirmButtonText: "Oui",
             cancelButtonText: "Non",
-            closeOnConfirm: true,
-            closeOnCancel: true
-        }, function(isConfirm) {
-            if (isConfirm) {
+        })
+        .then((willConfirm) => {
+            if (willConfirm) {
                 window.location.href = "{% url 'delete_payment' 0 %}".replace('0', paymentId);
             }
         });

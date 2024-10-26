@@ -15,6 +15,7 @@ urlpatterns = [
     path('payment-type/delete/<int:id>/', deletePaymentTypeView, name='delete_payment_type'),
 
     path('payment/all/', listPaymentView, name='payments'),
+    path('', listPaymentView, name='payments'),
     path('payment/create/', createPaymentView, name='create_payment'),
     path('payment/edit/<int:id>/', editPaymentView, name='edit_payment'),
     path('payment/delete/<int:id>/', deletePaymentView, name='delete_payment'),

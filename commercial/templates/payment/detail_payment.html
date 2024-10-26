@@ -17,13 +17,27 @@
 
     {% if is_admin %}
         <div class="d-flex justify-content-end ml-auto">
-            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
-            <button type="button" class="btn btn-list ml-lg-3 mt-lg-0 mt-2" data-toggle="modal" data-target="#validationCycleModal">Cycle</button>
+            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" 
+            class="btn btn-list ml-lg-3 mt-lg-0 mt-2">
+                <span class="d-none d-sm-inline p-3">Modifier</span>
+                <i class="fas fa-edit d-inline d-sm-none p-3"></i>
+            </a>
+            <button type="button" class="btn btn-list ml-lg-3 mt-lg-0 mt-2" data-toggle="modal" data-target="#validationsModal">
+                <span class="d-none d-sm-inline p-3">Validation</span>
+                <i class="fas fa-arrows-spin d-inline d-sm-none p-3"></i>
+            </button>
         </div>
     {% elif is_draft and is_commercial and payment.commercial == user %}
         <div class="d-flex justify-content-end ml-auto">
-            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
-            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" class="btn btn-list ml-lg-3 mt-lg-0 mt-2">Modifier</a>
+            <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')" 
+            class="btn btn-list ml-lg-3 mt-lg-0 mt-2">
+                <span class="d-none d-sm-inline p-3">Modifier</span>
+                <i class="fas fa-edit d-inline d-sm-none p-3"></i>
+            </a>
+            <button type="button" class="btn btn-list ml-lg-3 mt-lg-0 mt-2" data-toggle="modal" data-target="#validationsModal">
+                <span class="d-none d-sm-inline p-3">Validation</span>
+                <i class="fas fa-arrows-spin d-inline d-sm-none p-3"></i>
+            </button>
         </div>
     {% endif %}
 </div>
@@ -70,7 +84,7 @@
     <div class="row mb-4">
         <div class="col-lg-6 col-md-6 mb-2">
             <label class="form-label form-obs">Observation</label>
-            <p class="form-control">{{ payment.observation }}</p>
+            <p class="form-control">{% if payment.observation %}{{ payment.observation }}{% else %}/{% endif %}</p>
         </div>
         <div class="col-lg-6 col-md-6 mb-2">
             <label class="form-label">Chèque (Image)</label>
@@ -92,7 +106,7 @@
         <button class="btn-validate mr-2" onclick="validatePayment('{{ payment.id }}')">Valider</button>
         <button class="btn-cancel" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
     {% endif %}
-    {% if is_draft and is_commercial %}
+    {% if is_draft and is_commercial and user == payment.commercial %}
         <button class="btn-validate mr-2" onclick="confirmPayment('{{ payment.id }}')">Confirmer</button>
         <button class="btn-cancel" onclick="cancelPayment('{{ payment.id }}')">Annuler</button>
     {% elif is_back_office and is_confirmed %}
@@ -100,6 +114,7 @@
         <button class="btn-cancel" onclick="refusePayment('{{ payment.id }}')">Refuser</button>
     {% endif %}
 </div>
+{% include 'modal.html' %}
 
 <style>
     .form-label{
@@ -133,13 +148,13 @@
                     type: "POST",
                     url: "{% url 'confirm_payment' 0 %}".replace('0', paymentId),
                     data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     success: function(response) {
                         if (response.success) {
                             swal("Succès!", response.message, "success")
                             .then(() => {
-                                location.reload();  // Refresh the page or redirect as needed
+                                location.reload();
                             });
                         } else {
                             swal("Erreur!", response.message, "error");
@@ -169,7 +184,7 @@
                     type: "POST",
                     url: "{% url 'cancel_payment' 0 %}".replace('0', paymentId),
                     data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     success: function(response) {
                         if (response.success) {
@@ -205,7 +220,7 @@
                     type: "POST",
                     url: "{% url 'validate_payment' 0 %}".replace('0', paymentId),
                     data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
                     },
                     success: function(response) {
                         if (response.success) {
@@ -245,7 +260,7 @@
                     type: "POST",
                     url: "{% url 'refuse_payment' 0 %}".replace('0', paymentId),
                     data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',  // Ensure you have CSRF token
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
                         refusal_reason: refusalReason,
                     },
                     success: function(response) {
@@ -267,7 +282,6 @@
             }
         });
     }
-    
     
 </script>
 

@@ -41,5 +41,5 @@ class PaymentFilter(FilterSet):
         user = kwargs.pop('user', None)
         super(PaymentFilter, self).__init__(*args, **kwargs)
         if user:
-            self.filters['zone'].queryset = user.zones.all()
-
+                self.filters['zone'].queryset = user.zones.all()
+            

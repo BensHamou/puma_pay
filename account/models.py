@@ -25,6 +25,7 @@ class Setting(BaseModel):
 
 class Zone(BaseModel):
     designation = models.CharField(max_length=50)
+    address = models.CharField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return self.designation
@@ -57,6 +58,18 @@ class User(BaseModel, AbstractUser):
 
     def __str__(self):
         return self.fullname
+    
+    def has_admin(self):
+        return self.role == 'Admin'
+    
+    def has_backoffice(self):
+        return self.role == 'Back Office'
+    
+    def has_commercial(self):
+        return self.role == 'Commercial'
+    
+    def has_obs(self):
+        return self.role == 'Observateur'
 
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'

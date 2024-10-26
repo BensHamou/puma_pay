@@ -1,5 +1,5 @@
 <div class="input-group">
-    <input type="text" id="check-image-filename" class="form-control input-file" placeholder="No file chosen" readonly>
+    <input type="text" id="check-image-filename" class="form-control input-file" placeholder="Aucun fichier" readonly>
     <button class="btn btn-outline-success" type="button" id="check-image-btn">+</button>
     <button type="button" id="check-image-clear-btn" class="btn btn-danger">X</button>
 </div>
@@ -22,7 +22,7 @@
         {% endif %}
 
         fileInput.addEventListener('change', function () {
-            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'Aucun fichier';
             filenameInput.value = fileName;
             if (clearCheckbox) {
                 clearCheckbox.checked = false;

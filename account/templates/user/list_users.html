@@ -16,14 +16,13 @@ Paramètre Utilisateurs
                     {{ filteredData.form.search }}
                     {{ filteredData.form.new_users_only }}
                 </div>
-                <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center">
+                <div class="col-lg-6 col-12 d-flex flex-row justify-content-lg-end justify-content-start align-items-center">
                     <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
                            class="form-control page-size">
-                    <button type="submit" class="btn-list mt-lg-0 mt-2" style='margin-left: 5px;'>Appliquer</button>
-                    <a href="{% url 'refresh_users' %}" class="btn-icon mt-lg-0 mt-2"><i class="fa-solid fa-arrows-rotate"></i></a>
+                    <button type="submit" class="btn-list ml-2">Appliquer</button>
+                    <a href="{% url 'refresh_users' %}" class="btn-icon ml-2"><i class="fa-solid fa-arrows-rotate"></i></a>
                 </div>
             </div>
-            
         </form>
     </div>
 </div>
@@ -34,7 +33,7 @@ Paramètre Utilisateurs
                 <th class="table-header">ID</th>
                 <th class="table-header">Nom complet</th>
                 <th class="table-header">Email</th>
-                <th class="table-header">Zones</th>
+                <th class="table-header d-none d-md-table-cell">Zones</th>
                 <th class="table-header">Rôle</th>
                 <th class="table-header" style="text-align: center;">Actions</th>
             </tr>

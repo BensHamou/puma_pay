@@ -102,7 +102,7 @@
         </div>
         <div class="row m-0">
             <div class="col-12 text-center m-0">
-                <button type="submit" form="payment-form" class="btn-list-sm d-lg-none">Ajouter un paiement</button>
+                <button type="submit" form="payment-form" class="btn-list-sm d-lg-none">{% if form.instance.pk %}Sauvegarder{% else %}Ajouter un paiement{% endif %}</button>
             </div>
         </div>
     </div>

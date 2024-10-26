@@ -17,11 +17,11 @@ Paramètre Objectifs
                     {{ filteredData.form.search }}
                     {{ filteredData.form.zone }}
                 </div>
-                <div class="col-lg-6 col-12 d-flex flex-lg-row flex-column justify-content-lg-end justify-content-start align-items-center">
+                <div class="col-lg-6 col-12 d-flex flex-row justify-content-lg-end justify-content-start align-items-center">
                     <input type="number" name="page_size" value="{{ request.GET.page_size|default:12 }}" 
                            class="form-control page-size">
-                    <button type="submit" class="btn-list mt-lg-0 mt-2" style='margin-left: 5px;'>Appliquer</button>
-                    <a href="{% url 'create_objective' %}" class="btn btn-list mt-lg-0 mt-2">Ajouter</a>
+                    <button type="submit" class="btn-list ml-2">Appliquer</button>
+                    <a href="{% url 'create_objective' %}" class="btn btn-list ml-2">Ajouter</a>
                 </div>
             </div>
         </form>
