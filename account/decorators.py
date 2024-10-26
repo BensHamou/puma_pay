@@ -55,8 +55,9 @@ def getRedirectionURL(request, url_path):
         'state': request.GET.get('state', ''),
         'start_date': request.GET.get('start_date', ''),
         'end_date': request.GET.get('end_date', ''),
-        'site': request.GET.get('site', ''),
-        'distru': request.GET.get('distru', '')
+        'zone': request.GET.get('zone', ''),
+        'new_users_only': request.GET.get('new_users_only', ''),
+        'payment_type': request.GET.get('payment_type', '')
     }
     cache_param = str(uuid.uuid4())
     query_string = '&'.join([f'{key}={value}' for key, value in params.items() if value])

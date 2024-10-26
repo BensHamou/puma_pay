@@ -393,12 +393,12 @@ def getWidgets(request):
         monthly_objective_value = monthly_objective.amount 
     except Objective.DoesNotExist:
         monthly_objective_value = 0
-    weekly_objective_value = round(monthly_objective_value * 7 / 30)
+    weekly_objective_value = round(monthly_objective_value / 4)
 
     start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
     weekly_payments = payments.filter(date__gte=start_of_week)
     weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
-    weekly_objective_value = round(monthly_objective_value * 7 / 30)
+    weekly_objective_value = round(monthly_objective_value * 4)
     total_weekly_payments = weekly_payments.count()
 
     monthly_payments = payments.filter(date__month=current_month, date__year=current_year)

@@ -117,8 +117,7 @@ def editUserView(request, id):
         if form.is_valid():
             form.save(user=request.user)
             form.save_m2m()
-            url_path = reverse('users')
-            return redirect(getRedirectionURL(request, url_path))
+            return redirect(getRedirectionURL(request, url_path = reverse('users')))
     context = {'form': form, 'user_': user }
     return render(request, 'user_form.html', context)
 
