@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: PAY_DB
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=PumaPay
+      - POSTGRES_USER=puma_pay
+      - POSTGRES_PASSWORD=puma_pay
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5444:5432"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: puma_pay:latest
+    restart: unless-stopped
+    container_name: PAY_APP
+    ports:
+      - "8044:8044"
+    volumes:
+      - ./puma_pay:/puma_pay
+
+    command: >
+      sh -c "python manage.py makemigrations &&
+         python manage.py migrate &&
+         python manage.py runserver 0.0.0.0:8044"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=PumaPay
+      - DB_USER=puma_pay
+      - DB_PASS=puma_pay
+      - DB_PORT=5432
+  cron:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    image: pay_cron
+    container_name: PAY_CRON
+    depends_on:
+    - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=PumaPay
+      - DB_USER=puma_pay
+      - DB_PASS=puma_pay
+      - DB_PORT=5432
+    command: >
+      sh -c "python manage.py crontab remove &&
+            python manage.py crontab add &&
+            crond -f"
+volumes:
+  db_data:
+# networks:
+#   default:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.16.67.0/24

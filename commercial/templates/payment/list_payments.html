@@ -113,7 +113,7 @@ Paramètre Paiements
                 {% for payment in page %}
                 <tr style="color: #5d5d5d;">
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.id }}</td>
-                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.ref }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</td>
                     <td class="table-text {% if user.has_commercial %}d-none{% endif %}" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }} ({{ payment.zone }})</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payment_type }}</td>
@@ -125,17 +125,17 @@ Paramètre Paiements
                         {% if user.has_admin %}
                             <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
-                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.id|stringformat:"04d" }}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-trash-can"></i></a>
                         {% elif user.has_commercial and payment.state == 'Brouillon' %} 
                             <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
-                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.id|stringformat:"04d" }}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-trash-can"></i></a>
                         {% else %}
                             <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
                                 class="btn disabled" style="color: #5d5d5d; cursor: not-allowed;"><i class="far fa-pen-to-square"></i></a>
-                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.ref }}')"
+                            <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.id|stringformat:"04d" }}')"
                                 class="btn disabled" style="color: #5d5d5d; cursor: not-allowed;"><i class="far fa-trash-can"></i></a>
                         {% endif %}
                     </td>
@@ -221,7 +221,7 @@ Paramètre Paiements
     function confirmPaymentDel(paymentId, paymentRef) {
         swal({
             title: "Confirmation de la suppression.",
-            text: `Etes-vous sûr que vous voulez supprimer le paiement référence ${paymentRef}?`,
+            text: `Etes-vous sûr que vous voulez supprimer le paiement ID ${paymentRef}?`,
             icon: "warning",
             buttons: true,
             dangerMode: true,

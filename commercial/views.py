@@ -369,7 +369,7 @@ def changeState(request, pk, action):
     return payment, True
 
 def send_confirmation_email(payment):
-    subject = f'Paiement REF[{payment.ref}]'
+    subject = f'Paiement ID[{str(payment.id).zfill(4)}]'
     html_message = render_to_string('fragment/payment_confirmation.html', {'payment': payment})
 
     addresses = payment.zone.address.split('&')

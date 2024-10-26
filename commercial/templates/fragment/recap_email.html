@@ -1,0 +1,31 @@
+{% load humanize %}
+<h2>Récapitulatif des Paiements - {{ zone.designation }}</h2>
+
+<p>Bonjour l'équipe,</p>
+
+<p>Voici le récap des paiements du {{ from|date:"d/m/Y" }} au {{ to|date:"d/m/Y" }}:</p>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>ID</th>
+        <th>Nom du Client</th>
+        <th>Commercial</th>
+        <th>Date</th>
+        <th>Banque</th>
+        <th>Type de Versement</th>
+        <th>Montant</th>
+    </tr>
+    {% for payment in payments %}
+    <tr>
+        <td>{{ payment.id|stringformat:"04d" }}</td>
+        <td>{{ payment.client }}</td>
+        <td>{{ payment.commercial }}</td>
+        <td>{{ payment.date|date:"d/m/Y" }}</td>
+        <td>{{ payment.bank }}</td>
+        <td>{{ payment.payment_type }}</td>
+        <td>{{ payment.amount|intcomma }} DZD</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p>Cordialement</p>

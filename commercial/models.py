@@ -25,7 +25,7 @@ class PaymentType(BaseModel):
         return self.designation
 
 def get_check_image_filename(instance, filename):
-    title = instance.ref
+    title = str(instance.id).zfill(4)
     slug = slugify(title)
     return f"images/check/{slug}-{filename}"
     
@@ -39,7 +39,7 @@ class Payment(BaseModel):
     check_image = models.ImageField(upload_to=get_check_image_filename, verbose_name='Check Image', blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     payment_type = models.ForeignKey(PaymentType, on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
-    ref = models.CharField(max_length=7, blank=True, null=True, unique=True)
+    ref = models.CharField(max_length=7, blank=True, null=True)
     observation = models.TextField(null=True, blank=True)
     date = models.DateField()
     state = models.CharField(choices=STATE_PAYMENT, max_length=40)
@@ -56,7 +56,7 @@ class Payment(BaseModel):
             img.save(self.check_image.path, quality=50, optimize=True)
 
     def __str__(self):
-        return f"Payment REF: {self.ref} - {self.amount} {self.state}"
+        return f"Payment ID: {str(self.id).zfill(4)} - {self.amount} {self.state}"
 
 
 class Validation(BaseModel):
@@ -69,4 +69,4 @@ class Validation(BaseModel):
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "Validation - " + str(self.payment.id) + " - " + str(self.date)
+        return "Validation - " + str(str(self.payment.id).zfill(4)) + " - " + str(self.date)

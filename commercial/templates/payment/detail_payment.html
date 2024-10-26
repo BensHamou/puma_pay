@@ -13,7 +13,7 @@
        style="letter-spacing: 1.2px;">
         <i class="fas fa-arrow-left" style="color: #060747; margin-right: 25px"></i>
     </a>
-    <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Paiement REF[{{ payment.ref }}] ({{ payment.state }})</p>
+    <p class="lead m-0 p-0 page-title" style="color: #060747; font-weight: 600">Paiement ID[{{ payment.id|stringformat:"04d" }}] ({{ payment.state }})</p>
 
     {% if is_admin %}
         <div class="d-flex justify-content-end ml-auto">
@@ -64,7 +64,7 @@
         </div>
         <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Référence</label>
-            <p class="form-control">{{ payment.ref }}</p>
+            <p class="form-control">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</p>
         </div>
     </div>
     <div class="row mb-4">

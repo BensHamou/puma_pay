@@ -42,6 +42,18 @@ class PaymentForm(BaseModelForm):
     check_image = forms.ImageField(widget=CustomClearableFileInput(attrs={'class': 'd-none', 'id': 'check-image-input', 'accept': 'image/*'}), required=False)
     observation = forms.CharField(widget=forms.Textarea(attrs= getAttrs('textarea','Observation')), required=False)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        payment_type = cleaned_data.get("payment_type")
+        ref = cleaned_data.get("ref")
+        if payment_type and payment_type.designation == "Chèque":
+            if not ref:
+                self.add_error('ref', "Référence est obligatoire pour les paiements par Chèque.")
+            else:
+                if Payment.objects.filter(ref=ref).exists():
+                    self.add_error('ref', "Ce numéro de référence existe déjà pour un autre paiement.")
+        return cleaned_data
+    
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super(PaymentForm, self).__init__(*args, **kwargs)

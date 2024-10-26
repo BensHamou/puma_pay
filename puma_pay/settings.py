@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     'django_cleanup.apps.CleanupConfig',
+    'django_crontab',
     "account",
     "commercial",
     "bootstrap5",
@@ -40,6 +41,14 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_extensions",
 ]
+
+CRONJOBS = [
+    ('0 17 * * 4', 'commercial.cron.send_weekly_recap_email'),
+    ('0 17 28-31 * *', 'commercial.cron.send_monthly_recap_email'),
+]
+
+
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -77,13 +86,21 @@ WSGI_APPLICATION = "puma_pay.wsgi.application"
 
 DATABASES = {
     'default': {
-       'ENGINE': 'django.db.backends.postgresql',
-       'NAME': 'PumaPay',
-       'USER': 'puma_pay',
-       'PASSWORD': 'puma_pay',
-       'HOST': '127.0.0.1',
-       'PORT': '5432',
-    }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    },
+    #'default': {
+    #   'ENGINE': 'django.db.backends.postgresql',
+    #   'NAME': 'PumaPay',
+    #   'USER': 'puma_pay',
+    #   'PASSWORD': 'puma_pay',
+    #   'HOST': '127.0.0.1',
+    #   'PORT': '5432',
+    #}
 }
 
 
