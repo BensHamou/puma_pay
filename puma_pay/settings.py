@@ -85,22 +85,30 @@ WSGI_APPLICATION = "puma_pay.wsgi.application"
 
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.environ.get('DB_NAME'),
+    #     'USER': os.environ.get('DB_USER'),
+    #     'PASSWORD': os.environ.get('DB_PASS'),
+    #     'HOST': os.environ.get('DB_HOST'),
+    #     'PORT': os.environ.get('DB_PORT'),
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASS'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+      'ENGINE': 'django.db.backends.postgresql',
+      'NAME': 'PumaPay',
+      'USER': 'puma_pay',
+      'PASSWORD': 'puma_pay',
+      'HOST': '127.0.0.1',
+      'PORT': '5432',
     },
-    #'default': {
+    # 'default': {
     #   'ENGINE': 'django.db.backends.postgresql',
     #   'NAME': 'PumaPay',
     #   'USER': 'puma_pay',
     #   'PASSWORD': 'puma_pay',
-    #   'HOST': '127.0.0.1',
-    #   'PORT': '5432',
-    #}
+    #   'HOST': '10.10.10.20',
+    #   'PORT': '5444',
+    # }
 }
 
 
