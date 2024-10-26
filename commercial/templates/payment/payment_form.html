@@ -22,22 +22,20 @@
     {% csrf_token %}
     <div class="table-responsive" style="padding: 15px;">
         <div class="row mb-4">
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-4 col-md-4 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Commercial</label>
                 {{ form.commercial }}
                 {% if form.commercial.errors %}
                     <small class="text-danger">{{ form.commercial.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-4 col-md-4 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Zone</label>
                 {{ form.zone }}
                 {% if form.zone.errors %}
                     <small class="text-danger">{{ form.zone.errors }}</small>
                 {% endif %}
             </div>
-        </div>
-        <div class="row mb-4">
             <div class="col-lg-4 col-md-4 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Client</label>
                 {{ form.client }}
@@ -45,20 +43,6 @@
                 <div id="suggestions" class="sugdiv"></div>
                 {% if form.client.errors %}
                     <small class="text-danger">{{ form.client.errors }}</small>
-                {% endif %}
-            </div>
-            <div class="col-lg-4 col-md-4 mb-2">
-                <label class="form-label" style="color: #343434; font-weight: 600;">Date de paiement</label>
-                {{ form.date }}
-                {% if form.date.errors %}
-                    <small class="text-danger">{{ form.date.errors }}</small>
-                {% endif %}
-            </div>
-            <div class="col-lg-4 col-md-4 mb-2">
-                <label class="form-label" style="color: #343434; font-weight: 600;">Référence</label>
-                {{ form.ref }}
-                {% if form.ref.errors %}
-                    <small class="text-danger">{{ form.ref.errors }}</small>
                 {% endif %}
             </div>
         </div>
@@ -71,10 +55,33 @@
                 {% endif %}
             </div>
             <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Date de paiement</label>
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <small class="text-danger">{{ form.date.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Date de dépot</label>
+                {{ form.date_depot }}
+                {% if form.date_depot.errors %}
+                    <small class="text-danger">{{ form.date_depot.errors }}</small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-4 col-md-4 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Type de versement</label>
                 {{ form.payment_type }}
                 {% if form.payment_type.errors %}
                     <small class="text-danger">{{ form.payment_type.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 col-md-4 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Référence</label>
+                {{ form.ref }}
+                {% if form.ref.errors %}
+                    <small class="text-danger">{{ form.ref.errors }}</small>
                 {% endif %}
             </div>
             <div class="col-lg-4 col-md-4 mb-2">

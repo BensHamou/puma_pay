@@ -44,27 +44,17 @@
 
 <div class="table-responsive" style="padding: 15px;">
     <div class="row mb-4">
-        <div class="col-lg-6 col-md-6 mb-2">
+        <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Commercial</label>
             <p class="form-control">{{ payment.commercial }}</p>
         </div>
-        <div class="col-lg-6 col-md-6 mb-2">
+        <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Zone</label>
             <p class="form-control">{{ payment.zone }}</p>
         </div>
-    </div>
-    <div class="row mb-4">
         <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Client</label>
             <p class="form-control">{{ payment.client }}</p>
-        </div>
-        <div class="col-lg-4 col-md-4 mb-2">
-            <label class="form-label">Date de paiement</label>
-            <p class="form-control">{{ payment.date }}</p>
-        </div>
-        <div class="col-lg-4 col-md-4 mb-2">
-            <label class="form-label">Référence</label>
-            <p class="form-control">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</p>
         </div>
     </div>
     <div class="row mb-4">
@@ -73,8 +63,22 @@
             <p class="form-control">{{ payment.bank }}</p>
         </div>
         <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Date de paiement</label>
+            <p class="form-control">{{ payment.date }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Date de Dépot</label>
+            <p class="form-control">{{ payment.date_depot }} DZD</p>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Type de versement</label>
             <p class="form-control">{{ payment.payment_type }}</p>
+        </div>
+        <div class="col-lg-4 col-md-4 mb-2">
+            <label class="form-label">Référence</label>
+            <p class="form-control">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</p>
         </div>
         <div class="col-lg-4 col-md-4 mb-2">
             <label class="form-label">Montant</label>

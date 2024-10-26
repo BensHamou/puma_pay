@@ -10,7 +10,8 @@
         <th>ID</th>
         <th>Nom du Client</th>
         <th>Commercial</th>
-        <th>Date</th>
+        <th>Paiement</th>
+        <th>Dépot</th>
         <th>Banque</th>
         <th>Type de Versement</th>
         <th>Montant</th>
@@ -21,6 +22,7 @@
         <td>{{ payment.client }}</td>
         <td>{{ payment.commercial }}</td>
         <td>{{ payment.date|date:"d/m/Y" }}</td>
+        <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
         <td>{{ payment.bank }}</td>
         <td>{{ payment.payment_type }}</td>
         <td>{{ payment.amount|intcomma }} DZD</td>

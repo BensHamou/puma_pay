@@ -42,6 +42,7 @@ class Payment(BaseModel):
     ref = models.CharField(max_length=7, blank=True, null=True)
     observation = models.TextField(null=True, blank=True)
     date = models.DateField()
+    date_depot = models.DateField()
     state = models.CharField(choices=STATE_PAYMENT, max_length=40)
     
     def validations(self):

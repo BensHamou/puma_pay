@@ -103,7 +103,8 @@ Paramètre Paiements
                 <th class="table-header {% if user.has_commercial %}d-none{% endif %}">Commercial</th>
                 <th class="table-header">Client</th>
                 <th class="table-header">Méthode</th>
-                <th class="table-header">Date</th>
+                <th class="table-header">Paiement</th>
+                <th class="table-header">Dépot</th>
                 <th class="table-header" style="text-align: right;">Montant</th>
                 <th class="table-header {% if not user.has_commercial and not user.has_admin %}d-none{% endif %}" style="text-align: center;">Actions</th>
             </tr>
@@ -118,6 +119,7 @@ Paramètre Paiements
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payment_type }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date_depot }}</td>
                     <td class="table-text" style="cursor: pointer; color: {% if payment.state == 'Validé' %}green{% endif %} 
                         {% if payment.state == 'Refusé' %}red{% endif %}{% if payment.state == 'Brouillon' %}gray; font-style: italic{% endif %}; font-weight: 700; text-align: right;" 
                         onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.amount|intcomma }} DZD</td>
