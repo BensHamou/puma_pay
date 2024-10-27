@@ -37,7 +37,7 @@ class Payment(BaseModel):
     zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='payments')
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='payments')
     check_image = models.ImageField(upload_to=get_check_image_filename, verbose_name='Check Image', blank=True, null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     payment_type = models.ForeignKey(PaymentType, on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     ref = models.CharField(max_length=7, blank=True, null=True)
     observation = models.TextField(null=True, blank=True)

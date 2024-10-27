@@ -33,7 +33,7 @@ class Zone(BaseModel):
 class Objective(BaseModel):
     zone = models.ForeignKey(Zone, related_name='objectives', on_delete=models.CASCADE)
     month = models.DateField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    amount = models.DecimalField(max_digits=14, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
 
     class Meta:
         unique_together = ('zone', 'month') 

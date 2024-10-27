@@ -84,7 +84,7 @@ class ObjectiveForm(BaseModelForm):
 
     zone = forms.ModelChoiceField(queryset=Zone.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Zone")
     month = forms.DateField(widget=forms.DateInput(attrs=getAttrs('month', 'Mois')), input_formats=['%Y-%m'], help_text="Format: YYYY-MM" )
-    amount = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant de l\'objectif', {'min': 0.01})))
+    amount = forms.DecimalField(max_digits=14, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant de l\'objectif', {'min': 0.01})))
     
     def clean_month(self):
         month = self.cleaned_data.get('month')

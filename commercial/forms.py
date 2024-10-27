@@ -39,7 +39,7 @@ class PaymentForm(BaseModelForm):
     ref = forms.CharField(widget=forms.NumberInput(attrs=getAttrs('control', 'Référence')), required=False, validators=[RegexValidator(r'^\d+$', 'Only numbers are allowed.')] )
     date = forms.DateField(initial=timezone.now().date(), widget=forms.widgets.DateInput(attrs= getAttrs('date'), format='%Y-%m-%d'))
     date_depot = forms.DateField(initial=timezone.now().date(), widget=forms.widgets.DateInput(attrs= getAttrs('date'), format='%Y-%m-%d'))
-    amount = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant', {'min': 0.01})))
+    amount = forms.DecimalField(max_digits=12, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant', {'min': 0.01})))
     check_image = forms.ImageField(widget=CustomClearableFileInput(attrs={'class': 'd-none', 'id': 'check-image-input', 'accept': 'image/*'}), required=False)
     observation = forms.CharField(widget=forms.Textarea(attrs= getAttrs('textarea','Observation')), required=False)
 
