@@ -30,10 +30,36 @@
             line-height: 22px;
             color: #1a3257;
         }
+        .login-left {
+            background-image: url('{% static "img/left_login.png" %}');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: #f6f6f6;
+        }
+
+        .connect{
+            font-family: Montserrat;
+            font-size: 24px;
+            font-weight: 400;
+            line-height: 30px;
+            text-align: left;
+            color: #1a3257;
+        }
+
+        .welcome{
+            font-family: Montserrat;
+            font-size: 40px;
+            font-weight: 600;
+            line-height: 48px;
+            text-align: left;
+            color: #1a3257;
+        }
+
         @media (max-width: 768px){
             .container-fluid {
                 background-image: url('{% static "img/background_log.png" %}');
-                background-size: contain;
+                background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
             }
@@ -41,68 +67,76 @@
     </style>
 </head>
 <body>
-    <div class="container-fluid bg-white" style="height: 100vh;">
-        <div class="row justify-content-center" style="height: 7%;">
-            <div class="col-12 text-center mt-2">
-                <img src="{% static 'img/logo_puma.png' %}" alt="Logo" class="img-fluid" style="max-height: 50px;">
-            </div>
+    <div class="container-fluid bg-white d-flex m-0 p-0" style="height: 94vh;">
+        <div class="col-lg-8 d-none d-lg-block login-left">
         </div>
-
-        <div class="row justify-content-center" style="height: 58%;">
-            <div class="col-lg-4 col-md-6 col-12 my-auto">
-                <form method="POST" class="p-4 d-flex flex-column" style="height: 100%; justify-content: space-between;" id="login-form">
-                    {% csrf_token %}
-                    <div class="form-group mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        {{ form.username }}
-                        {% for message in messages %}
-                            {% if message|startwith:'LOGINUSR : ' %}
-                                <div class="error-message text-danger text-right">{{ message|loginerror:'LOGINUSR : ' }}</div>
-                            {% endif %}
-                        {% endfor %}  
+        <div class="col-lg-4 col-12">
+            <div class="row justify-content-center d-lg-none" style="height: 10vh;">
+                <div class="col-12 text-center">
+                    <img src="{% static 'img/logo_puma.png' %}" alt="Logo" class="img-fluid" style="max-height: 50px;">
+                </div>
+            </div>
+            <div class="row justify-content-center d-none d-lg-block" style="height: 10vh;">
+                <div class="col-12 text-left p-5">
+                    <p class='welcome'>Bienvenue</p>
+                    <p class='connecte'>Se connecter a votre compte</p>
+                </div>
+            </div>
+    
+            <div class="row justify-content-center" style="height: 60vh;">
+                <div class="col-lg-12 col-md-6 col-12 my-auto">
+                    <form method="POST" class="p-4 d-flex flex-column" style="height: 100%; justify-content: space-between;" id="login-form">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            {{ form.username }}
+                            {% for message in messages %}
+                                {% if message|startwith:'LOGINUSR : ' %}
+                                    <div class="error-message text-danger text-right">{{ message|loginerror:'LOGINUSR : ' }}</div>
+                                {% endif %}
+                            {% endfor %}  
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            {{ form.password }}
+                            {% for message in messages %}
+                                {% if message|startwith:'LOGINPWD : ' %}
+                                    <div class="error-message text-danger text-right">{{ message|loginerror:'LOGINPWD : ' }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </form>
+                </div> 
+            </div>
+    
+            <div class="row justify-content-end" style="height: 10vh;">
+                <div class="col-lg-4 col-12 my-auto">
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" form="login-form" class="btn-login">Se connecter</button>
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        {{ form.password }}
-                        {% for message in messages %}
-                            {% if message|startwith:'LOGINPWD : ' %}
-                                <div class="error-message text-danger text-right">{{ message|loginerror:'LOGINPWD : ' }}</div>
-                            {% endif %}
+                </div> 
+            </div>
+            
+            <div class="row justify-content-center align-items-center" style="height: 10vh;">
+                <div class="col-10">
+                    <div class="row row-cols-5 row-cols-md-10 text-center">
+                        {% for i in '0123456789' %}
+                            <div class="col p-2">
+                                <img src="{% static 'motifs/motif_'|add:i|add:'.png' %}" alt="Motif {{ i }}" class="img-fluid" style="max-height: 50px;">
+                            </div>
                         {% endfor %}
                     </div>
-                </form>
-            </div> 
-        </div>
-
-        <div class="row justify-content-center" style="height: 10%;">
-            <div class="col-lg-4 col-12 my-auto">
-                <div class="d-flex justify-content-end">
-                    <button type="submit" form="login-form" class="btn-login">Se connecter</button>
-                </div>
-            </div> 
-        </div>
-        
-    
-        <div class="row justify-content-center align-items-center" style="height: 17%;">
-            <div class="col-10">
-                <div class="row row-cols-5 row-cols-md-10 text-center">
-                    {% for i in '0123456789' %}
-                        <div class="col p-2">
-                            <img src="{% static 'motifs/motif_'|add:i|add:'.png' %}" alt="Motif {{ i }}" class="img-fluid" style="max-height: 50px;">
-                        </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
-        
-        <footer class="row text-white align-items-center" style="height: 8%; background-color: #060747">
-            <div class="col-6 text-left">
-                <p class="mb-0">Garantie pour la construction</p>
-            </div>
-            <div class="col-6 text-right">
-                <img src="{% static 'img/footer.png' %}" alt="Footer Logo" class="img-fluid" style="max-height: 40px;">
-            </div>
-        </footer>
     </div>
+    <footer class="row text-white align-items-center m-0" style="height: 6vh; background-color: #060747;">
+        <div class="col-6 text-left">
+            <p class="mb-0">Garantie pour la construction</p>
+        </div>
+        <div class="col-6 text-right">
+            <img src="{% static 'img/footer.png' %}" alt="Footer Logo" class="img-fluid" style="max-height: 40px;">
+        </div>
+    </footer>
 </body>
 </html>

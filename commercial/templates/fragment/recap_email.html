@@ -9,6 +9,7 @@
     <tr>
         <th>ID</th>
         <th>Nom du Client</th>
+        <th>Nom du Payeur</th>
         <th>Commercial</th>
         <th>Paiement</th>
         <th>Dépot</th>
@@ -20,6 +21,7 @@
     <tr>
         <td>{{ payment.id|stringformat:"04d" }}</td>
         <td>{{ payment.client }}</td>
+        <td>{{ payment.payer }}</td>
         <td>{{ payment.commercial }}</td>
         <td>{{ payment.date|date:"d/m/Y" }}</td>
         <td>{{ payment.date_depot|date:"d/m/Y" }}</td>

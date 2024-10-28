@@ -18,6 +18,11 @@ def execute_query(query, params=None):
         records = cursor.fetchall()
     return records
 
+def getPayerId(payer_name):
+    query = """SELECT id, name FROM res_partner WHERE name ILIKE %s AND state = 'validate' LIMIT 5;"""
+    params = ('%' + payer_name.upper() + '%',)
+    return execute_query(query, params)
+
 def getClientId(client_name):
     query = """SELECT id, name FROM res_partner WHERE name ILIKE %s AND state = 'validate' LIMIT 5;"""
     params = ('%' + client_name.upper() + '%',)

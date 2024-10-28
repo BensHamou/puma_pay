@@ -93,22 +93,22 @@ DATABASES = {
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
     },
-    # 'default': {
-    #   'ENGINE': 'django.db.backends.postgresql',
-    #   'NAME': 'PumaPay',
-    #   'USER': 'puma_pay',
-    #   'PASSWORD': 'puma_pay',
-    #   'HOST': '127.0.0.1',
-    #   'PORT': '5432',
-    # },
-    # 'default': {
-    #   'ENGINE': 'django.db.backends.postgresql',
-    #   'NAME': 'PumaPay',
-    #   'USER': 'puma_pay',
-    #   'PASSWORD': 'puma_pay',
-    #   'HOST': '10.10.10.20',
-    #   'PORT': '5444',
-    # }
+    #'default': {
+    #  'ENGINE': 'django.db.backends.postgresql',
+    #  'NAME': 'PumaPay',
+    #  'USER': 'puma_pay',
+    #  'PASSWORD': 'puma_pay',
+    #  'HOST': '127.0.0.1',
+    #  'PORT': '5432',
+    #},
+    #'default': {
+    #  'ENGINE': 'django.db.backends.postgresql',
+    #  'NAME': 'PumaPay',
+    #  'USER': 'puma_pay',
+    #  'PASSWORD': 'puma_pay',
+    #  'HOST': '10.10.10.20',
+    #  'PORT': '5444',
+    #}
 }
 
 

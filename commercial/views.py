@@ -9,7 +9,7 @@ from django.db.models import Sum
 from account.decorators import *
 from django.urls import reverse
 from datetime import timedelta 
-from .utils import getClientId
+from .utils import getClientId, getPayerId
 from functools import wraps
 from .filters import *
 from .models import *
@@ -293,8 +293,13 @@ def detail_payment(request, pk):
 
 @login_required(login_url='login')
 def live_search(request):
+    search_for = request.GET.get('search_for', '')
     term = request.GET.get('search_term', '')
-    records = getClientId(term)
+
+    if search_for == 'payer':
+        records = getPayerId(term)
+    elif search_for == 'client':
+        records = getClientId(term)
 
     if len(records) > 0:
         return JsonResponse([{'id': obj[0], 'name': f'''{obj[1]} - [ref: 0{obj[0]}] : ({obj[0]})'''.replace("'","\\'")} for obj in records], safe=False)

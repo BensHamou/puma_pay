@@ -32,8 +32,10 @@ def get_check_image_filename(instance, filename):
 class Payment(BaseModel):
 
     commercial = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
-    client_id = models.IntegerField()
     client = models.CharField(max_length=255)
+    client_id = models.IntegerField()
+    payer = models.CharField(max_length=255, blank=True, null=True)
+    payer_id = models.IntegerField(blank=True, null=True)
     zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='payments')
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='payments')
     check_image = models.ImageField(upload_to=get_check_image_filename, verbose_name='Check Image', blank=True, null=True)

@@ -102,6 +102,7 @@ Paramètre Paiements
                 <th class="table-header">Référence</th>
                 <th class="table-header {% if user.has_commercial %}d-none{% endif %}">Commercial</th>
                 <th class="table-header">Client</th>
+                <th class="table-header">Payeur</th>
                 <th class="table-header">Méthode</th>
                 <th class="table-header">Paiement</th>
                 <th class="table-header">Dépot</th>
@@ -117,6 +118,7 @@ Paramètre Paiements
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</td>
                     <td class="table-text {% if user.has_commercial %}d-none{% endif %}" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }} ({{ payment.zone }})</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
+                    <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payer }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payment_type }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.date_depot }}</td>

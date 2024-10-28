@@ -26,12 +26,15 @@ class CustomClearableFileInput(ClearableFileInput):
 class PaymentForm(BaseModelForm):
     class Meta:
         model = Payment
-        fields = ['commercial', 'client_id', 'client', 'zone', 'bank', 'payment_type', 'ref', 'date', 'date_depot', 'amount', 'check_image', 'observation']
+        fields = ['commercial', 'client_id', 'client', 'payer_id', 'payer', 'zone', 'bank', 'payment_type', 'ref', 'date', 'date_depot', 'amount', 'check_image', 'observation']
 
     commercial = forms.ModelChoiceField(queryset=User.objects.filter(Q(role='Commercial') | Q(role='Admin')), widget=forms.Select(attrs=getAttrs('select')), empty_label="Commercial")
     
     client_id = forms.IntegerField(widget=forms.HiddenInput(attrs=getAttrs('controlID','ID_client_id')))
     client = forms.CharField(widget=forms.TextInput(attrs=getAttrs('controlSearch','Client')))
+    
+    payer_id = forms.IntegerField(widget=forms.HiddenInput(attrs=getAttrs('controlID','ID_payer_id')))
+    payer = forms.CharField(widget=forms.TextInput(attrs=getAttrs('controlSearch','Payeur')))
     
     zone = forms.ModelChoiceField(queryset=Zone.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Zone")
     bank = forms.ModelChoiceField(queryset=Bank.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Banque")
