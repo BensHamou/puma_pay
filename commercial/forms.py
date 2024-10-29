@@ -54,7 +54,7 @@ class PaymentForm(BaseModelForm):
             if not ref:
                 self.add_error('ref', "Référence est obligatoire pour les paiements par Chèque.")
             else:
-                if Payment.objects.filter(ref=ref).exists():
+                if Payment.objects.filter(ref=ref).exclude(id=self.instance.pk).exists():
                     self.add_error('ref', "Ce numéro de référence existe déjà pour un autre paiement.")
         return cleaned_data
     
