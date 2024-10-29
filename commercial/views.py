@@ -302,7 +302,7 @@ def live_search(request):
         records = getClientId(term)
 
     if len(records) > 0:
-        return JsonResponse([{'id': obj[0], 'name': f'''{obj[1]} - [ref: 0{obj[0]}] : ({obj[0]})'''.replace("'","\\'")} for obj in records], safe=False)
+        return JsonResponse([{'id': obj[0], 'name': f'''{obj[1]}'''.replace("'","\\'")} for obj in records], safe=False)
         
     return JsonResponse([], safe=False)
 
@@ -417,7 +417,7 @@ def getWidgets(request):
             {'label': 'Somme des paiements', 'value': format_amount(weekly_payment_sum), 'color': getColor(weekly_objective_value, weekly_payment_sum)},
             {'label': 'Total des paiements', 'value': f"{total_weekly_payments} paiements"},
         ],
-        'image': "'img/hebdomadaire'",
+        'image': 'img/hendomadaire.png',
         'active': True
     }
 
@@ -428,7 +428,7 @@ def getWidgets(request):
             {'label': 'Somme des paiements', 'value': format_amount(monthly_payment_sum), 'color': getColor(monthly_objective_value, monthly_payment_sum)},
             {'label': 'Total des paiements', 'value': f"{total_monthly_payments} paiements"},
         ],
-        'image': "'img/mensuelle'",
+        'image': 'img/mensuelle.png',
         'active': False
     }
     return [widget_1, widget_2]
