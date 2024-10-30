@@ -1,0 +1,7 @@
+{% load humanize %}
+<p>Bonjour l'équipe,</p>
+<p>Le paiement ID[{{ payment.id|stringformat:"04d" }}] ({{ payment.zone }}) a été réfusé par <b style="color: #002060">{{ validation.actor }}</b> le <b>{{ validation.date|date:"d/m/Y" }}</b>.</p>
+
+<p>Motif: <b style="color: #002060">{{ validation.refusal_reason }}</b></p>
+
+<p>Cordialement,</p>

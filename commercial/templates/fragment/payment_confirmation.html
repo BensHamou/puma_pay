@@ -7,8 +7,9 @@
     <li><b>Client :</b> <b style="color: #002060">{{ payment.client }}</b></li>
     <li><b>Payeur :</b> <b style="color: #002060">{{ payment.payer }}</b></li>
     <li><b>Date récupération paiement :</b> <b style="color: #002060">{{ payment.date|date:"d/m/Y" }}</b></li>
+    <li><b>Banque client :</b> {{ payment.bank }}</b></li>
     <li><b>Date de dépot :</b> <b style="color: #002060">{{ payment.date_depot|date:"d/m/Y" }}</b></li>
-    <li><b>Banque :</b> {{ payment.bank }}</b></li>
+    <li><b>Banque dépot :</b> {{ payment.bank_depot }}</b></li>
     <li><b>Type de paiement :</b> <b style="color: #002060">{{ payment.payment_type }}</b></li>
     <li><b>Référence chèque :</b> <b style="color: #002060">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</b></li>
     <li><b>Montant :</b> <b style="color: #002060">{{ payment.amount|intcomma }} DZD</b></li>

@@ -29,6 +29,11 @@ def get_check_image_filename(instance, filename):
     slug = slugify(title)
     return f"images/check/{slug}-{filename}"
     
+def get_deposit_image_filename(instance, filename):
+    title = str(instance.id).zfill(4)
+    slug = slugify(title)
+    return f"images/deposit/{slug}-{filename}"
+
 class Payment(BaseModel):
 
     commercial = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
@@ -38,7 +43,9 @@ class Payment(BaseModel):
     payer_id = models.IntegerField(blank=True, null=True)
     zone = models.ForeignKey(Zone, on_delete=models.CASCADE, related_name='payments')
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='payments')
+    bank_depot = models.ForeignKey(Bank, on_delete=models.CASCADE, related_name='payments_depot')
     check_image = models.ImageField(upload_to=get_check_image_filename, verbose_name='Check Image', blank=True, null=True)
+    deposit_image = models.ImageField(upload_to=get_deposit_image_filename, verbose_name='Check Image', blank=True, null=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     payment_type = models.ForeignKey(PaymentType, on_delete=models.SET_NULL, related_name='payments', null=True, blank=True)
     ref = models.CharField(max_length=7, blank=True, null=True)
@@ -57,6 +64,11 @@ class Payment(BaseModel):
             max_size = (1280, 720)
             img.thumbnail(max_size, PILImage.LANCZOS)
             img.save(self.check_image.path, quality=50, optimize=True)
+        if self.deposit_image and os.path.exists(self.deposit_image.path):
+            img_2 = PILImage.open(self.deposit_image.path)
+            max_size = (1280, 720)
+            img_2.thumbnail(max_size, PILImage.LANCZOS)
+            img_2.save(self.deposit_image.path, quality=50, optimize=True)
 
     def __str__(self):
         return f"Payment ID: {str(self.id).zfill(4)} - {self.amount} {self.state}"

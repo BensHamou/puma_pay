@@ -34,7 +34,8 @@ Paramètre Objectifs
             <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
                 <th class="table-header">ID</th>
                 <th class="table-header">Zone</th>
-                <th class="table-header">Mois</th>
+                <th class="table-header">Du</th>
+                <th class="table-header">Au</th>
                 <th class="table-header">Montant</th>
                 <th class="table-header" style="text-align: center;">Actions</th>
             </tr>
@@ -45,7 +46,8 @@ Paramètre Objectifs
                 <tr style="color: #5d5d5d;">
                     <td class="table-text">{{ objective.id }}</td>
                     <td class="table-text">{{ objective.zone.designation }}</td>
-                    <td class="table-text">{{ objective.month|date:"F Y" }}</td>
+                    <td class="table-text">{{ objective.date_from }}</td>
+                    <td class="table-text">{{ objective.date_to }}</td>
                     <td class="table-text">{{ objective.amount|intcomma }} DZD</td>
                     <td class="text-center p-0 m-0">
                         <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_objective' objective.id %}')" 

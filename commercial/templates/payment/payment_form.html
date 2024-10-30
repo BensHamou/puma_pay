@@ -22,23 +22,21 @@
     {% csrf_token %}
     <div class="table-responsive" style="padding: 15px;">
         <div class="row mb-4">
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Commercial</label>
                 {{ form.commercial }}
                 {% if form.commercial.errors %}
                     <small class="text-danger">{{ form.commercial.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Zone</label>
                 {{ form.zone }}
                 {% if form.zone.errors %}
                     <small class="text-danger">{{ form.zone.errors }}</small>
                 {% endif %}
             </div>
-        </div>
-        <div class="row mb-4">
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Client</label>
                 {{ form.client }}
                 {{ form.client_id }}
@@ -47,7 +45,7 @@
                     <small class="text-danger">{{ form.client.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-6 col-md-6 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Payeur</label>
                 {{ form.payer }}
                 {{ form.payer_id }}
@@ -58,21 +56,28 @@
             </div>
         </div>
         <div class="row mb-4">
-            <div class="col-lg-4 col-md-4 mb-2">
-                <label class="form-label" style="color: #343434; font-weight: 600;">Nom de banque</label>
+            <div class="col-lg-3 col-md-6 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Banque Client</label>
                 {{ form.bank }}
                 {% if form.bank.errors %}
                     <small class="text-danger">{{ form.bank.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-4 col-md-4 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Date récupération paiement</label>
                 {{ form.date }}
                 {% if form.date.errors %}
                     <small class="text-danger">{{ form.date.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-4 col-md-4 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Banque Dépot</label>
+                {{ form.bank_depot }}
+                {% if form.bank_depot.errors %}
+                    <small class="text-danger">{{ form.bank_depot.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Date de dépot</label>
                 {{ form.date_depot }}
                 {% if form.date_depot.errors %}
@@ -81,40 +86,52 @@
             </div>
         </div>
         <div class="row mb-4">
-            <div class="col-lg-4 col-md-4 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Type de versement</label>
                 {{ form.payment_type }}
                 {% if form.payment_type.errors %}
                     <small class="text-danger">{{ form.payment_type.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-4 col-md-4 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Référence</label>
                 {{ form.ref }}
                 {% if form.ref.errors %}
                     <small class="text-danger">{{ form.ref.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-4 col-md-4 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Montant</label>
                 {{ form.amount }}
                 {% if form.amount.errors %}
                     <small class="text-danger">{{ form.amount.errors }}</small>
                 {% endif %}
             </div>
-        </div>
-        <div class="row mb-4">
-            <div class="col-lg-10 col-md-9 mb-2">
+            <div class="col-lg-3 col-md-6 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Observation</label>
                 {{ form.observation }}
                 {% if form.observation.errors %}
                     <small class="text-danger">{{ form.observation.errors }}</small>
                 {% endif %}
             </div>
-            <div class="col-lg-2 col-md-3 mb-2">
+        </div>
+        <div class="row mb-4">
+            <div class="col-lg-6 col-md-6 mb-2">
                 <div class="form-group image-container">
                     <label for="check_image">Chèque (Image)</label>
                     {{ form.check_image }}
+                    {% if form.check_image.errors %}
+                        <small class="text-danger">{{ form.check_image.errors }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 mb-2">
+                <div class="form-group image-container">
+                    <label for="deposit_image">Dépot de chèque (Image)</label>
+                    {{ form.deposit_image }}
+                    {% if form.deposit_image.errors %}
+                        <small class="text-danger">{{ form.deposit_image.errors }}</small>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -185,6 +202,11 @@
         padding-left: 30px; 
         border-radius: 100px;
     }
+    .input-disabled {
+        background-color: #f0f0f0;
+        color: #a9a9a9;
+        cursor: not-allowed;
+    }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -246,6 +268,30 @@
                 suggestions.hide();
             }
         });
+
+        const paymentTypeSelect = document.querySelector('#id_payment_type');  // Use the correct ID of your payment_type select
+        const referenceInput = document.querySelector('#id_ref');  // Use the correct ID of your ref input field
+
+        // Function to toggle the disabled state of the reference field
+        function toggleReferenceField() {
+            const selectedText = paymentTypeSelect.options[paymentTypeSelect.selectedIndex].text;
+
+            console.log(selectedText)
+            if (selectedText === 'Chèque') {
+                referenceInput.disabled = false;
+                referenceInput.classList.remove('input-disabled'); 
+            } else {
+                referenceInput.disabled = true;
+                referenceInput.value = ''; 
+                referenceInput.classList.add('input-disabled');
+            }
+        }
+
+        // Initial check
+        toggleReferenceField();
+
+        // Add event listener for changes
+        paymentTypeSelect.addEventListener('change', toggleReferenceField);
         
         $('form').submit(function (event) {
             event.preventDefault();

@@ -253,14 +253,17 @@ def createPaymentView(request):
 @can_edit
 def editPaymentView(request, id):
     payment = get_object_or_404(Payment, id=id)
-    original_image = payment.check_image 
+    original_check_image = payment.check_image 
+    original_deposit_image = payment.deposit_image 
     form = PaymentForm(instance=payment, user=request.user)
     if request.method == 'POST':
         form = PaymentForm(request.POST, request.FILES, instance=payment, user=request.user)
         if form.is_valid():
             payment = form.save(user=request.user, commit=False)
-            if not payment.check_image and original_image:
-                original_image.delete(save=False)
+            if not payment.check_image and original_check_image:
+                original_check_image.delete(save=False)
+            if not payment.deposit_image and original_deposit_image:
+                original_deposit_image.delete(save=False)
             payment.save()
             url_path = reverse('detail_payment', args=[payment.id])
             return redirect(getRedirectionURL(request, url_path))
@@ -310,9 +313,9 @@ def live_search(request):
 @check_creator
 def confirmPayment(request, pk):
     if request.method == 'POST':
-        payment, success = changeState(request, pk, 'Confirmé')
+        payment, success, validation = changeState(request, pk, 'Confirmé')
         if success:
-            send_confirmation_email(payment)
+            send_email(payment)
             return JsonResponse({'success': True, 'message': 'Paiement confirmé avec succès.', 'payment_id': payment.id})
         else:
             return JsonResponse({'success': False, 'message': 'Le paiement n\'existe pas.'})
@@ -322,7 +325,7 @@ def confirmPayment(request, pk):
 @check_creator
 def cancelReport(request, pk):
     if request.method == 'POST':
-        payment, success = changeState(request, pk, 'Annulé')
+        payment, success, validation = changeState(request, pk, 'Annulé')
         if success:
             return JsonResponse({'success': True, 'message': 'Paiement anulé avec succès.', 'payment_id': payment.id})
         else:
@@ -333,7 +336,7 @@ def cancelReport(request, pk):
 @check_validator
 def validateReport(request, pk):
     if request.method == 'POST':
-        payment, success = changeState(request, pk, 'Validé')
+        payment, success, validation = changeState(request, pk, 'Validé')
         if success:
             return JsonResponse({'success': True, 'message': 'Paiement validé avec succès.', 'payment_id': payment.id})
         else:
@@ -344,10 +347,9 @@ def validateReport(request, pk):
 @check_validator
 def refuseReport(request, pk):
     if request.method == 'POST':
-        refusal_reason = request.POST.get('refusal_reason')
-        payment, success = changeState(request, pk, 'Refusé')
+        payment, success, validation = changeState(request, pk, 'Refusé')
         if success:
-            createValidation(request, payment, 'Refusé', refusal_reason)
+            send_email(payment, validation)
             return JsonResponse({'success': True, 'message': 'Paiement refusé avec succès.', 'payment_id': payment.id})
         else:
             return JsonResponse({'success': False, 'message': 'Le paiement n\'existe pas.'})
@@ -361,6 +363,7 @@ def createValidation(request, payment, new_state, refusal_reason=None):
     payment.save()
     validation.save()
     messages.success(request, f'Payment set to {new_state} successfully')
+    return validation
 
 def changeState(request, pk, action):
     try:
@@ -370,12 +373,16 @@ def changeState(request, pk, action):
         return payment, False
     if payment.state == action:
         return payment, True
-    createValidation(request, payment, action)
-    return payment, True
+    validation = createValidation(request, payment, action, request.POST.get('refusal_reason', None))
+    return payment, True, validation
 
-def send_confirmation_email(payment):
+def send_email(payment, validation=False):
     subject = f'Paiement ID[{str(payment.id).zfill(4)}]'
-    html_message = render_to_string('fragment/payment_confirmation.html', {'payment': payment})
+    if validation:
+        subject += ' - Refusé'
+        html_message = render_to_string('fragment/payment_refusal.html', {'payment': payment, 'validation': validation})
+    else:
+        html_message = render_to_string('fragment/payment_confirmation.html', {'payment': payment})
 
     addresses = payment.zone.address.split('&')
     if not addresses:
@@ -385,6 +392,8 @@ def send_confirmation_email(payment):
     email.attach_alternative(html_message, "text/html") 
     if payment.check_image:
         email.attach(payment.check_image.name, payment.check_image.read(), 'image/jpeg')
+    if payment.deposit_image:
+        email.attach(payment.deposit_image.name, payment.deposit_image.read(), 'image/jpeg')
 
     email.send()
 
@@ -393,18 +402,25 @@ def getWidgets(request):
     current_month = timezone.now().month
     current_year = timezone.now().year
     payments = Payment.objects.filter(zone=user_first_zone, state='Validé')
+
+    today = timezone.now().date()
+    start_of_week = today - timedelta(days=today.weekday() + 1)
+    end_of_week = start_of_week + timedelta(days=6)
     try:
-        monthly_objective = Objective.objects.get(zone=user_first_zone, month__month=current_month, month__year=current_year)
-        monthly_objective_value = monthly_objective.amount 
+        weekly_objective = Objective.objects.get(zone=user_first_zone,date_from__lte=start_of_week,date_to__gte=end_of_week)
+        weekly_objective_value = weekly_objective.amount
+    except Objective.DoesNotExist:
+        weekly_objective_value = 0
+
+    weekly_payments = payments.filter(date__gte=start_of_week, date__lte=end_of_week)
+    weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
+    total_weekly_payments = weekly_payments.count()
+
+    try:
+        monthly_objective = Objective.objects.filter(zone=user_first_zone,date_from__month=current_month,date_from__year=current_year).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        monthly_objective_value = monthly_objective
     except Objective.DoesNotExist:
         monthly_objective_value = 0
-    weekly_objective_value = round(monthly_objective_value / 4)
-
-    start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
-    weekly_payments = payments.filter(date__gte=start_of_week)
-    weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
-    weekly_objective_value = round(monthly_objective_value * 4)
-    total_weekly_payments = weekly_payments.count()
 
     monthly_payments = payments.filter(date__month=current_month, date__year=current_year)
     monthly_payment_sum = monthly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
@@ -417,7 +433,7 @@ def getWidgets(request):
             {'label': 'Somme des paiements', 'value': format_amount(weekly_payment_sum), 'color': getColor(weekly_objective_value, weekly_payment_sum)},
             {'label': 'Total des paiements', 'value': f"{total_weekly_payments} paiements"},
         ],
-        'image': 'img/hendomadaire.png',
+        'image': 'img/hebdomadaire.png',
         'active': True
     }
 
@@ -431,6 +447,7 @@ def getWidgets(request):
         'image': 'img/mensuelle.png',
         'active': False
     }
+
     return [widget_1, widget_2]
 
 def getColor(A, B):

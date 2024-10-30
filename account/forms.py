@@ -1,9 +1,15 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-from datetime import datetime
+from datetime import timedelta
 from django import forms
 from .models import *
+from django import forms
+from django.utils import timezone
+
+today = timezone.now().date()
+start_of_week = today - timedelta(days=today.weekday() + 1)
+end_of_week = start_of_week + timedelta(days=6)
 
 def getAttrs(type, placeholder='', other={}):
     ATTRIBUTES = {
@@ -16,7 +22,6 @@ def getAttrs(type, placeholder='', other={}):
         'select2': {'class': 'form-select select2', 'style': 'background-color: #ffffff; padding-left: 30px; width: 100%; border-radius: 100px;'},
         'select3': {'class': 'form-select select3', 'style': 'background-color: #ffffff; padding-left: 30px; width: 100%; border-radius: 100px;'},
         'date': {'type': 'date', 'class': 'form-control dateinput','style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;'},
-        'month': {'type': 'month', 'class': 'form-control dateinput','style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;'},
         'time': {'type': 'time', 'class': 'form-control timeinput', 'style': 'background-color: #ffffff; padding-left: 30px; border-radius: 100px;', 'placeholder': ''},
         'textarea': {"rows": "3", 'style': 'width: 100%', 'class': 'form-control', 'placeholder': '', 'style': 'padding-left: 30px; background-color: #ffffff; border-radius: 50px;'}
     }
@@ -80,35 +85,37 @@ class ZoneForm(BaseModelForm):
 class ObjectiveForm(BaseModelForm):
     class Meta:
         model = Objective
-        fields = ['zone', 'month', 'amount']
+        fields = ['zone', 'date_from', 'date_to', 'amount']
 
     zone = forms.ModelChoiceField(queryset=Zone.objects.all(), widget=forms.Select(attrs=getAttrs('select')), empty_label="Zone")
-    month = forms.DateField(widget=forms.DateInput(attrs=getAttrs('month', 'Mois')), input_formats=['%Y-%m'], help_text="Format: YYYY-MM" )
+    date_from = forms.DateField(initial=start_of_week, widget=forms.widgets.DateInput(attrs= getAttrs('date'), format='%Y-%m-%d'))
+    date_to = forms.DateField(initial=end_of_week, widget=forms.widgets.DateInput(attrs= getAttrs('date'), format='%Y-%m-%d'))
     amount = forms.DecimalField(max_digits=14, decimal_places=2, widget=forms.NumberInput(attrs=getAttrs('control', 'Montant de l\'objectif', {'min': 0.01})))
-    
-    def clean_month(self):
-        month = self.cleaned_data.get('month')
-        if month is None:
-            raise ValidationError("Le mois est requis.")
-        return month
 
-    def save(self, user=None, commit=True):
-        objective = super().save(commit=False, user=user)
-        if isinstance(self.cleaned_data['month'], str):
-            objective.month = datetime.strptime(self.cleaned_data['month'], '%Y-%m').date()
-        else:
-            objective.month = self.cleaned_data['month']
-        if commit:
-            objective.save()
-        return objective
-    
     def clean(self):
         cleaned_data = super().clean()
         zone = cleaned_data.get("zone")
-        month = cleaned_data.get("month")
-        if zone and month:
-            if Objective.objects.filter(zone=zone, month=month).exists():
-                self.add_error('zone', f"Un objectif existe déjà pour cette zone au mois de {month}.")
-                self.add_error('month', f"Un objectif existe déjà pour la zone {zone} au ce mois.")
-                raise ValidationError(f"Un objectif existe déjà pour la zone {zone} au mois de {month}.")
+        date_from = cleaned_data.get("date_from")
+        date_to = cleaned_data.get("date_to")
+
+        if date_from and date_to:
+            if (date_to - date_from).days != 6:
+                self.add_error('date_to', "La période doit être exactement de 7 jours.")
+                raise ValidationError("La période entre date_from et date_to doit être de 7 jours.")
+
+            if date_from.weekday() != 6:
+                self.add_error('date_from', "La date de début doit être un dimanche.")
+            if date_to.weekday() != 5:
+                self.add_error('date_to', "La date de fin doit être un samedi.")
+            
+            if self.errors:
+                raise ValidationError("Veuillez vérifier que la période commence un dimanche, se termine un samedi et dure 7 jours.")
+        
+        if zone and date_from and date_to:
+            overlapping_objectives = Objective.objects.filter(zone=zone,date_from__lte=date_to,date_to__gte=date_from).exclude(id=self.instance.pk)
+            if overlapping_objectives.exists():
+                self.add_error('zone', f"Un objectif existe déjà pour cette zone au period {date_from} - {date_to}.")
+                self.add_error('date_from', f"Un objectif existe déjà pour la zone {zone} durant cette période.")
+                self.add_error('date_to', f"Un objectif existe déjà pour la zone {zone} durant cette période.")
+                raise ValidationError(f"Un objectif existe déjà pour la zone {zone} entre {date_from} et {date_to}.")
         return cleaned_data

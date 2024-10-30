@@ -43,7 +43,7 @@ class ObjectiveFilter(django_filters.FilterSet):
     zone = django_filters.ModelChoiceFilter(queryset=Zone.objects.all(), widget=forms.Select(attrs=getAttrs('select', 'Sélectionner une zone')), empty_label="Zone")
 
     def filter_search(self, queryset, name, value):
-        return queryset.filter(Q(zone__designation__icontains=value) | Q(month__icontains=value)).distinct()
+        return queryset.filter(Q(zone__designation__icontains=value) | Q(date_from__icontains=value)).distinct()
 
     class Meta:
         model = Objective

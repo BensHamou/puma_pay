@@ -32,14 +32,16 @@ class Zone(BaseModel):
 
 class Objective(BaseModel):
     zone = models.ForeignKey(Zone, related_name='objectives', on_delete=models.CASCADE)
-    month = models.DateField()
     amount = models.DecimalField(max_digits=14, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    date_from = models.DateField()
+    date_to = models.DateField()
+
 
     class Meta:
-        unique_together = ('zone', 'month') 
+        unique_together = ('zone', 'date_from') 
     
     def __str__(self):
-        return f"Objectif de la zone {self.zone.designation} pour le mois de {self.month.strftime('%B %Y')}"
+        return f"Objectif de la zone {self.zone.designation} pour periode {self.date_from.strftime('%D %B %Y')} - {self.date_to.strftime('%D %B %Y')}"
 
     
 class User(BaseModel, AbstractUser):

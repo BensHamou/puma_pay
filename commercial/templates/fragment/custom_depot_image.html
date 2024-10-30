@@ -1,0 +1,56 @@
+<div class="input-group">
+    <input type="text" id="deposit-image-filename" class="form-control input-file" placeholder="Aucun fichier" readonly>
+    <button class="btn btn-outline-success" type="button" id="deposit-image-btn">+</button>
+    <button type="button" id="deposit-image-clear-btn" class="btn btn-danger">X</button>
+</div>
+<input type="file" id="deposit-image-input" name="{{ widget.name }}" accept="image/*" class="d-none">
+{% if widget.value %}
+    <input type="checkbox" id="deposit-image-clear-checkbox" name="{{ widget.name }}-clear" class="d-none">
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('deposit-image-input');
+        const filenameInput = document.getElementById('deposit-image-filename');
+        const fileButton = document.getElementById('deposit-image-btn');
+        const clearButton = document.getElementById('deposit-image-clear-btn');
+        const clearDepositbox = document.getElementById('deposit-image-clear-checkbox');
+
+        {% if widget.value %}
+            const existingFile = "{{ widget.value }}".split('/').pop();
+            filenameInput.value = existingFile;
+        {% endif %}
+
+        fileInput.addEventListener('change', function () {
+            const fileName = fileInput.files[0] ? fileInput.files[0].name : 'Aucun fichier';
+            filenameInput.value = fileName;
+            if (clearDepositbox) {
+                clearDepositbox.deposited = false;
+                clearButton.classList.remove('active');
+            }
+        });
+
+        fileButton.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        clearButton.addEventListener('click', function () {
+            if (clearButton.classList.contains('active')) {
+                clearButton.classList.remove('active'); 
+                if (clearDepositbox) clearDepositbox.checked = false;
+            } else {
+                clearButton.classList.add('active'); 
+                if (clearDepositbox) clearDepositbox.checked = true;
+                filenameInput.value = ''; 
+                fileInput.value = '';
+            }
+        });
+    });
+</script>
+<style>
+    .input-file{
+        background-color: #ffffff; 
+        padding-left: 30px; 
+        border-radius: 100px;
+    }
+</style>
