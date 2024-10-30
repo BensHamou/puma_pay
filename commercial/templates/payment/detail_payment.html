@@ -102,7 +102,7 @@
             <label class="form-label">Chèque (Image)</label>
             </br>
             {% if payment.check_image %}
-                <img src="{{ payment.check_image.url }}" alt="Check Image" class="img-fluid" style="max-height: 250px;" />
+                <img src="{{ payment.check_image.url }}" alt="Check Image" class="img-fluid"/>
             {% else %}
                 <p>Aucune image</p>
             {% endif %}
@@ -111,7 +111,7 @@
             <label class="form-label">Dépot de chèque (Image)</label>
             </br>
             {% if payment.deposit_image %}
-                <img src="{{ payment.deposit_image.url }}" alt="Dépot Image" class="img-fluid" style="max-height: 250px;" />
+                <img src="{{ payment.deposit_image.url }}" alt="Dépot Image" class="img-fluid"/>
             {% else %}
                 <p>Aucune image</p>
             {% endif %}
