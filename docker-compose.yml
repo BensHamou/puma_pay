@@ -13,6 +13,7 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5444:5432"
+
   app:
     build:
       context: .
@@ -23,9 +24,8 @@ services:
     ports:
       - "8044:8044"
     volumes:
-      - ./puma_pay:/puma_pay
-      - media_volume:/puma_pay/media
-
+      - ./puma_pay:/puma_pay  # Mount the app folder to sync code changes
+      - ./media:/app/media    # Ensure media files persist on the host
     command: >
       sh -c "python manage.py makemigrations &&
          python manage.py migrate &&
@@ -38,6 +38,7 @@ services:
       - DB_USER=puma_pay
       - DB_PASS=puma_pay
       - DB_PORT=5432
+
   cron:
     build: 
       context: .
@@ -46,10 +47,10 @@ services:
     image: pay_cron
     container_name: PAY_CRON
     depends_on:
-    - db
+      - db
     volumes:
-      - ./puma_pay:/puma_pay
-      - media_volume:/puma_pay/media
+      - ./puma_pay:/puma_pay   # Mount the app folder to sync code changes
+      - ./media:/app/media     # Ensure media files persist on the host
     environment:
       - DB_HOST=db
       - DB_NAME=PumaPay
@@ -60,9 +61,11 @@ services:
       sh -c "python manage.py crontab remove &&
             python manage.py crontab add &&
             crond -f"
+
 volumes:
   db_data:
   media_volume:
+
 networks:
   default:
     driver: bridge
