@@ -101,7 +101,7 @@ def refreshUserList(request):
             user = User(username= user['AD2000'], password='password', fullname=user['fullname'], role='Nouveau', is_admin=False, first_name= user['fname'], email= user['mail'], last_name = user['lname'])
             user.save()
     else:
-        print('Error: could not fetch data from API.')
+        print('Erreur: could not fetch data from API.')
     cache_param = str(uuid.uuid4())
     url_path = reverse('users')
     redirect_url = f'{url_path}?cache={cache_param}'
