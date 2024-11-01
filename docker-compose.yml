@@ -24,6 +24,7 @@ services:
       - "8044:8044"
     volumes:
       - ./puma_pay:/puma_pay
+      - media_volume:/puma_pay/media
 
     command: >
       sh -c "python manage.py makemigrations &&
@@ -46,6 +47,9 @@ services:
     container_name: PAY_CRON
     depends_on:
     - db
+    volumes:
+      - ./puma_pay:/puma_pay
+      - media_volume:/puma_pay/media
     environment:
       - DB_HOST=db
       - DB_NAME=PumaPay
@@ -58,6 +62,7 @@ services:
             crond -f"
 volumes:
   db_data:
+  media_volume:
 networks:
   default:
     driver: bridge
