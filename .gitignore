@@ -5,7 +5,7 @@ puma_pay/__pycache__/
 
 *.pyc
 
-media/
+media/*
 
 account/migrations/*
 !account/migrations/__init__.py
