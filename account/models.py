@@ -33,21 +33,19 @@ class Zone(BaseModel):
 class Objective(BaseModel):
     zone = models.ForeignKey(Zone, related_name='objectives', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=14, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
-    date_from = models.DateField()
-    date_to = models.DateField()
-
+    month = models.DateField()
 
     class Meta:
-        unique_together = ('zone', 'date_from') 
+        unique_together = ('zone', 'month') 
     
     def __str__(self):
-        return f"Objectif de la zone {self.zone.designation} pour periode {self.date_from.strftime('%D %B %Y')} - {self.date_to.strftime('%D %B %Y')}"
+        return f"Objectif de la zone {self.zone.designation} pour le mois de {self.month.strftime('%B %Y')}"
 
-    
 class User(BaseModel, AbstractUser):
     ROLE_CHOICES = [
         ('Nouveau', 'Nouveau'),
         ('Commercial', 'Commercial'),
+        ('Zone Manageur', 'Zone Manageur'),
         ('Back Office', 'Back Office'),
         ('Observateur', 'Observateur'),
         ('Admin', 'Admin')
@@ -68,7 +66,7 @@ class User(BaseModel, AbstractUser):
         return self.role == 'Back Office'
     
     def has_commercial(self):
-        return self.role == 'Commercial'
+        return self.role in ['Commercial', 'Zone Manageur']
     
     def has_obs(self):
         return self.role == 'Observateur'

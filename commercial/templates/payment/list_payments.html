@@ -100,7 +100,7 @@ Paiements
             <tr style="color: #5d5d5d; border-bottom: 2px solid #C4C4C4; border-top: 2px solid #C4C4C4; background-color: #f5f5f5;">
                 <th class="table-header">ID</th>
                 <th class="table-header">Référence</th>
-                <th class="table-header {% if user.has_commercial %}d-none{% endif %}">Commercial</th>
+                <th class="table-header {% if user.has_commercial and user.role != 'Zone Manageur' %}d-none{% endif %}">Commercial</th>
                 <th class="table-header">Client</th>
                 <th class="table-header">Payeur</th>
                 <th class="table-header">Méthode</th>
@@ -116,7 +116,7 @@ Paiements
                 <tr style="color: #5d5d5d;">
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.id }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{% if payment.ref %}{{ payment.ref }}{% else %}/{% endif %}</td>
-                    <td class="table-text {% if user.has_commercial %}d-none{% endif %}" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }} ({{ payment.zone }})</td>
+                    <td class="table-text {% if user.has_commercial and user.role != 'Zone Manageur' %}d-none{% endif %}" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.commercial }} ({{ payment.zone }})</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.client }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payer }}</td>
                     <td class="table-text" style="cursor: pointer;" onclick="window.location=constructUrl('{% url 'detail_payment' payment.id %}')">{{ payment.payment_type }}</td>

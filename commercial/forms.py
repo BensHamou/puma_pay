@@ -31,7 +31,7 @@ class PaymentForm(BaseModelForm):
         model = Payment
         fields = ['commercial', 'client_id', 'client', 'payer_id', 'payer', 'zone', 'bank', 'bank_depot', 'payment_type', 'ref', 'date', 'date_depot', 'amount', 'check_image', 'deposit_image', 'observation']
 
-    commercial = forms.ModelChoiceField(queryset=User.objects.filter(Q(role='Commercial') | Q(role='Admin')), widget=forms.Select(attrs=getAttrs('select')), empty_label="Commercial")
+    commercial = forms.ModelChoiceField(queryset=User.objects.filter(Q(role='Commercial') | Q(role='Zone Manageur') | Q(role='Admin')), widget=forms.Select(attrs=getAttrs('select')), empty_label="Commercial")
     
     client_id = forms.IntegerField(widget=forms.HiddenInput(attrs=getAttrs('controlID','ID_client_id')))
     client = forms.CharField(widget=forms.TextInput(attrs=getAttrs('controlSearch','Client')))

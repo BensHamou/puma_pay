@@ -46,7 +46,7 @@ def can_view_payment(view_func):
             return view_func(request, *args, **kwargs)
         if request.user.has_backoffice() and payment.zone in request.user.zones.all():
             return view_func(request, *args, **kwargs)
-        if request.user.has_commercial() and payment.commercial == request.user:
+        if request.user.has_commercial() and (payment.commercial == request.user or request.user.role == 'Zone Manageur'):
             return view_func(request, *args, **kwargs)
         return render(request, '403.html', status=403)
     return wrapper
@@ -192,6 +192,8 @@ def listPaymentView(request):
 
     if request.user.has_admin():
         payments = Payment.objects.all().order_by('-date_modified')
+    elif request.user.role == 'Zone Manageur':
+        payments = Payment.objects.filter(zone__in=request.user.zones.all()).order_by('-date_modified')
     elif request.user.has_commercial():
         payments = Payment.objects.filter(commercial=request.user).order_by('-date_modified')
     else:
@@ -278,7 +280,7 @@ def detail_payment(request, pk):
     payment = get_object_or_404(Payment, pk=pk)    
     
     is_admin = request.user.role == 'Admin'
-    is_commercial = request.user.role == 'Commercial'
+    is_commercial = request.user.role in ['Commercial', 'Zone Manageur']
     is_back_office = request.user.role == 'Back Office'
     is_draft = payment.state == 'Brouillon'
     is_confirmed = payment.state == 'Confirmé'
@@ -397,48 +399,39 @@ def send_email(payment, validation=False):
 
     email.send()
 
-def getWidgets(request):
-    user_first_zone = request.user.zones.first()
-    current_month = timezone.now().month
-    current_year = timezone.now().year
-    payments = Payment.objects.filter(zone=user_first_zone, state='Validé')
-
-    today = timezone.now().date()
-    start_of_week = today - timedelta(days=today.weekday() + 1)
-    end_of_week = start_of_week + timedelta(days=6)
-    try:
-        weekly_objective = Objective.objects.get(zone=user_first_zone,date_from__lte=start_of_week,date_to__gte=end_of_week)
-        weekly_objective_value = weekly_objective.amount
-    except Objective.DoesNotExist:
-        weekly_objective_value = 0
-
-    weekly_payments = payments.filter(date__gte=start_of_week, date__lte=end_of_week)
-    weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
-    total_weekly_payments = weekly_payments.count()
+def get_zone_widget(zone, current_month, current_year):
+    payments = Payment.objects.filter(zone=zone, state='Validé')
 
     try:
-        monthly_objective = Objective.objects.filter(zone=user_first_zone,date_from__month=current_month,date_from__year=current_year).aggregate(total_amount=Sum('amount'))['total_amount'] or 0
-        monthly_objective_value = monthly_objective
+        monthly_objective = Objective.objects.get(zone=zone, month__month=current_month, month__year=current_year)
+        monthly_objective_value = monthly_objective.amount 
     except Objective.DoesNotExist:
         monthly_objective_value = 0
 
-    monthly_payments = payments.filter(date__month=current_month, date__year=current_year)
+    weekly_objective_value = round(monthly_objective_value / 4)
+
+    start_of_week = timezone.now().date() - timedelta(days=timezone.now().weekday())
+    weekly_payments = payments.filter(date_depot__gte=start_of_week)
+    weekly_payment_sum = weekly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
+    total_weekly_payments = weekly_payments.count()
+
+    monthly_payments = payments.filter(date_depot__month=current_month, date_depot__year=current_year)
     monthly_payment_sum = monthly_payments.aggregate(sum=Sum('amount'))['sum'] or 0
     total_monthly_payments = monthly_payments.count()
 
-    widget_1 = {
-        'title': 'Récap Hebdomadaire',
+    weekly_widget = {
+        'title': f'Récap Hebdomadaire - {zone.designation}',
         'elements': [
             {'label': 'Objectif', 'value': format_amount(weekly_objective_value)}, 
             {'label': 'Somme des paiements', 'value': format_amount(weekly_payment_sum), 'color': getColor(weekly_objective_value, weekly_payment_sum)},
             {'label': 'Total des paiements', 'value': f"{total_weekly_payments} paiements"},
         ],
         'image': 'img/hebdomadaire.png',
-        'active': True
+        'active': False
     }
 
-    widget_2 = {
-        'title': 'Récap Mensuelle',
+    monthly_widget = {
+        'title': f'Récap Mensuelle - {zone.designation}',
         'elements': [
             {'label': 'Objectif mensuelle', 'value': format_amount(monthly_objective_value)},
             {'label': 'Somme des paiements', 'value': format_amount(monthly_payment_sum), 'color': getColor(monthly_objective_value, monthly_payment_sum)},
@@ -448,7 +441,20 @@ def getWidgets(request):
         'active': False
     }
 
-    return [widget_1, widget_2]
+    return [weekly_widget, monthly_widget]
+
+def getWidgets(request):
+    user_zones = request.user.zones.all()
+    current_month = timezone.now().month
+    current_year = timezone.now().year
+
+    widgets = []
+    for zone in user_zones:
+        widgets.extend(get_zone_widget(zone, current_month, current_year))
+
+    widgets[0]['active'] = True
+
+    return widgets
 
 def getColor(A, B):
     C = A  - B

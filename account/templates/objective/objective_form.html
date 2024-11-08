@@ -31,24 +31,17 @@
                 {% endif %}
             </div>
             <div class="col-lg-6 col-md-12 mb-2">
+                <label class="form-label" style="color: #343434; font-weight: 600;">Mois</label>
+                {{ form.month }}
+                {% if form.month.errors %}
+                    <small class="text-danger">{{ form.month.errors }}</small>
+                {% endif %}
+            </div>
+            <div class="col-lg-6 col-md-12 mb-2">
                 <label class="form-label" style="color: #343434; font-weight: 600;">Montant</label>
                 {{ form.amount }}
                 {% if form.amount.errors %}
                     <small class="text-danger">{{ form.amount.errors }}</small>
-                {% endif %}
-            </div>
-            <div class="col-lg-6 col-md-12 mb-2">
-                <label class="form-label" style="color: #343434; font-weight: 600;">Du</label>
-                {{ form.date_from }}
-                {% if form.date_from.errors %}
-                    <small class="text-danger">{{ form.date_from.errors }}</small>
-                {% endif %}
-            </div>
-            <div class="col-lg-6 col-md-12 mb-2">
-                <label class="form-label" style="color: #343434; font-weight: 600;">Au</label>
-                {{ form.date_to }}
-                {% if form.date_to.errors %}
-                    <small class="text-danger">{{ form.date_to.errors }}</small>
                 {% endif %}
             </div>
         </div>
