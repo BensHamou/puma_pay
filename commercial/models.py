@@ -1,7 +1,7 @@
-from django.db import models
-from account.models import *
 from django.template.defaultfilters import slugify
 from PIL import Image as PILImage
+from django.db import models
+from account.models import *
 import os
 
 STATE_PAYMENT = [

@@ -1,35 +1,151 @@
 {% load humanize %}
-<h2>Récapitulatif des Paiements - {{ zone.designation }}</h2>
-
 <p>Bonjour l'équipe,</p>
 
-<p>Voici le récap des paiements du {{ from|date:"d/m/Y" }} au {{ to|date:"d/m/Y" }}:</p>
+<p>Voici le récap des paiements du <b style="color: #002060">{{ from|date:"d/m/Y" }}</b> au <b>{{ to|date:"d/m/Y" }}</b>:</p>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>ID</th>
-        <th>Nom du Client</th>
-        <th>Nom du Payeur</th>
-        <th>Commercial</th>
-        <th>Paiement</th>
-        <th>Dépot</th>
-        <th>Banque</th>
-        <th>Type de Versement</th>
-        <th>Montant</th>
-    </tr>
-    {% for payment in payments %}
-    <tr>
-        <td>{{ payment.id|stringformat:"04d" }}</td>
-        <td>{{ payment.client }}</td>
-        <td>{{ payment.payer }}</td>
-        <td>{{ payment.commercial }}</td>
-        <td>{{ payment.date|date:"d/m/Y" }}</td>
-        <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
-        <td>{{ payment.bank }}</td>
-        <td>{{ payment.payment_type }}</td>
-        <td>{{ payment.amount|intcomma }} DZD</td>
-    </tr>
-    {% endfor %}
-</table>
+<ul>
+    <li>Nombre total de rapports : <b style="color: #002060">{{ nbr_total }}</b></li>
+    <ul>
+        <li>Montant total : <b style="color: #002060">{{ amount_total }} DZD</b></li>
+    </ul>
+    <li>Rapports Validés  : <b style="color: #002060">{{ validated_total }}</b></li>
+    <ul>
+        <li>Montant total : <b style="color: #002060">{{ amount_validated }} DZD</b></li>
+    </ul>
+    <li>Rapports Confirmés  : <b style="color: #002060">{{ confirmed_total }}</b></li>
+    <ul>
+        <li>Montant total : <b style="color: #002060">{{ amount_confirmed }} DZD</b></li>
+    </ul>
+    <li>Rapports Refusé : <b style="color: #002060">{{ refused_total }}</b></li>
+    <ul>
+        <li>Montant total : <b style="color: #002060">{{ amount_refused }} DZD</b></li>
+    </ul>
+    <li>Rapport en Brouillons : <b style="color: #002060">{{ draft_total }}</b></li>
+    <ul>
+        <li>Montant total : <b style="color: #002060">{{ amount_draft }} DZD</b></li>
+    </ul>
+</ul>
+</br>
+
+{% if validated_total > 0 %}
+    <h4>Rapport <b style="color: #002060">Validé</b> {% if zone %}Zone {{ zone.designation }}{% endif %}:</h4>
+    <table border="1" cellpadding="5">
+        <tr style="background-color: #002060; color: white">
+            <th>ID</th>
+            <th>Nom du Client</th>
+            <th>Nom du Payeur</th>
+            <th>Commercial</th>
+            <th>Date Paiement</th>
+            <th>Date Dépôt</th>
+            <th>Banque</th>
+            <th>Type de Versement</th>
+            <th>Montant</th>
+        </tr>
+        {% for payment in validated_payments %}
+        <tr>
+            <td>{{ payment.id|stringformat:"04d" }}</td>
+            <td>{{ payment.client }}</td>
+            <td>{{ payment.payer }}</td>
+            <td>{{ payment.commercial }}</td>
+            <td>{{ payment.date|date:"d/m/Y" }}</td>
+            <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
+            <td>{{ payment.bank }}</td>
+            <td>{{ payment.payment_type }}</td>
+            <td>{{ payment.amount|intcomma }} DZD</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </br>
+{% endif %}
+{% if confirmed_total > 0 %}
+    <h4>Rapport <b style="color: #002060">Confirmé</b> {% if zone %}Zone {{ zone.designation }}{% endif %}:</h4>
+    <table border="1" cellpadding="5">
+        <tr style="background-color: #002060; color: white">
+            <th>ID</th>
+            <th>Nom du Client</th>
+            <th>Nom du Payeur</th>
+            <th>Commercial</th>
+            <th>Date Paiement</th>
+            <th>Date Dépôt</th>
+            <th>Banque</th>
+            <th>Type de Versement</th>
+            <th>Montant</th>
+        </tr>
+        {% for payment in confirmed_payments %}
+        <tr>
+            <td>{{ payment.id|stringformat:"04d" }}</td>
+            <td>{{ payment.client }}</td>
+            <td>{{ payment.payer }}</td>
+            <td>{{ payment.commercial }}</td>
+            <td>{{ payment.date|date:"d/m/Y" }}</td>
+            <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
+            <td>{{ payment.bank }}</td>
+            <td>{{ payment.payment_type }}</td>
+            <td>{{ payment.amount|intcomma }} DZD</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </br>
+{% endif %}
+{% if refused_total > 0 %}
+    <h4>Rapport <b style="color: #002060">Refusé</b> {% if zone %}Zone {{ zone.designation }}{% endif %}:</h4>
+    <table border="1" cellpadding="5">
+        <tr style="background-color: #002060; color: white">
+            <th>ID</th>
+            <th>Nom du Client</th>
+            <th>Nom du Payeur</th>
+            <th>Commercial</th>
+            <th>Date Paiement</th>
+            <th>Date Dépôt</th>
+            <th>Banque</th>
+            <th>Type de Versement</th>
+            <th>Montant</th>
+        </tr>
+        {% for payment in refused_payments %}
+        <tr>
+            <td>{{ payment.id|stringformat:"04d" }}</td>
+            <td>{{ payment.client }}</td>
+            <td>{{ payment.payer }}</td>
+            <td>{{ payment.commercial }}</td>
+            <td>{{ payment.date|date:"d/m/Y" }}</td>
+            <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
+            <td>{{ payment.bank }}</td>
+            <td>{{ payment.payment_type }}</td>
+            <td>{{ payment.amount|intcomma }} DZD</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </br>
+{% endif %}
+{% if draft_total > 0 %}
+    <h4>Rapport <b style="color: #002060">Brouillon</b> {% if zone %}Zone {{ zone.designation }}{% endif %}:</h4>
+    <table border="1" cellpadding="5">
+        <tr style="background-color: #002060; color: white">
+            <th>ID</th>
+            <th>Nom du Client</th>
+            <th>Nom du Payeur</th>
+            <th>Commercial</th>
+            <th>Date Paiement</th>
+            <th>Date Dépôt</th>
+            <th>Banque</th>
+            <th>Type de Versement</th>
+            <th>Montant</th>
+        </tr>
+        {% for payment in draft_payments %}
+        <tr>
+            <td>{{ payment.id|stringformat:"04d" }}</td>
+            <td>{{ payment.client }}</td>
+            <td>{{ payment.payer }}</td>
+            <td>{{ payment.commercial }}</td>
+            <td>{{ payment.date|date:"d/m/Y" }}</td>
+            <td>{{ payment.date_depot|date:"d/m/Y" }}</td>
+            <td>{{ payment.bank }}</td>
+            <td>{{ payment.payment_type }}</td>
+            <td>{{ payment.amount|intcomma }} DZD</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </br>
+{% endif %}
 
 <p>Cordialement</p>

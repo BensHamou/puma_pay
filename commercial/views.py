@@ -22,7 +22,7 @@ def check_creator(view_func):
             return view_func(request, *args, **kwargs)
         paytment_id = kwargs.get('pk')
         payment = Payment.objects.get(id=paytment_id)
-        if request.user.has_commercial() and payment.commercial == request.user and payment.state == 'Brouillon':
+        if request.user.has_commercial() and payment.commercial == request.user and payment.state in ['Brouillon', 'Refusé']:
             return view_func(request, *args, **kwargs)
         return render(request, '403.html', status=403)
     return wrapper
@@ -66,7 +66,7 @@ def can_edit(view_func):
         payment = Payment.objects.get(id=paytment_id)
         if request.user.has_admin():
             return view_func(request, *args, **kwargs)
-        if request.user.has_commercial() and payment.commercial == request.user:
+        if request.user.has_commercial() and payment.commercial == request.user and payment.state in ['Brouillon', 'Refusé']:
             return view_func(request, *args, **kwargs)
         return render(request, '403.html', status=403)
     return wrapper
@@ -282,7 +282,7 @@ def detail_payment(request, pk):
     is_admin = request.user.role == 'Admin'
     is_commercial = request.user.role in ['Commercial', 'Zone Manageur']
     is_back_office = request.user.role == 'Back Office'
-    is_draft = payment.state == 'Brouillon'
+    is_draft_or_refused = payment.state in ['Brouillon', 'Refusé']
     is_confirmed = payment.state == 'Confirmé'
     
     context = {
@@ -290,7 +290,7 @@ def detail_payment(request, pk):
         'is_admin': is_admin,
         'is_commercial': is_commercial,
         'is_back_office': is_back_office,
-        'is_draft': is_draft,
+        'is_draft_or_refused': is_draft_or_refused,
         'is_confirmed': is_confirmed,
     }
 
@@ -317,7 +317,7 @@ def confirmPayment(request, pk):
     if request.method == 'POST':
         payment, success, validation = changeState(request, pk, 'Confirmé')
         if success:
-            send_email(payment)
+            send_email(payment, validation)
             return JsonResponse({'success': True, 'message': 'Paiement confirmé avec succès.', 'payment_id': payment.id})
         else:
             return JsonResponse({'success': False, 'message': 'Le paiement n\'existe pas.'})
@@ -372,15 +372,21 @@ def changeState(request, pk, action):
         payment = Payment.objects.get(id=pk)
     except Payment.DoesNotExist:
         messages.success(request, 'Le paiement n\'existe pas')
-        return payment, False
+        return payment, False, None
     if payment.state == action:
-        return payment, True
-    validation = createValidation(request, payment, action, request.POST.get('refusal_reason', None))
+        return payment, True, None
+    reason = request.POST.get('refusal_reason', None)
+    if payment.state == 'Refusé' and action == 'Confirmé':
+        reason = 'Correrction.'
+    validation = createValidation(request, payment, action, reason)
     return payment, True, validation
 
 def send_email(payment, validation=False):
     subject = f'Paiement ID[{str(payment.id).zfill(4)}]'
-    if validation:
+    if validation and validation.old_state == 'Refusé':
+        subject += ' - Correction'
+        html_message = render_to_string('fragment/payment_correction.html', {'payment': payment, 'validation': validation})
+    elif validation and validation.new_state == 'Refusé':
         subject += ' - Refusé'
         html_message = render_to_string('fragment/payment_refusal.html', {'payment': payment, 'validation': validation})
     else:
@@ -389,7 +395,6 @@ def send_email(payment, validation=False):
     addresses = payment.zone.address.split('&')
     if not addresses:
         addresses = ['mohammed.senoussaoui@grupopuma-dz.com']
-    
     email = EmailMultiAlternatives(subject, None, 'Puma Paiement', addresses)
     email.attach_alternative(html_message, "text/html") 
     if payment.check_image:

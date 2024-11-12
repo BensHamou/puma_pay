@@ -131,7 +131,7 @@ Paiements
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
                             <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.id|stringformat:"04d" }}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-trash-can"></i></a>
-                        {% elif user.has_commercial and payment.state == 'Brouillon' %} 
+                        {% elif user.has_commercial and payment.state in 'Brouillon,Refusé' %} 
                             <a href="javascript:void(0);" onclick="window.location=constructUrl('{% url 'edit_payment' payment.id %}')"
                                 class="btn" style="color: #5d5d5d;"><i class="far fa-pen-to-square"></i></a>
                             <a href="javascript:void(0);" onclick="confirmPaymentDel('{{ payment.id }}', '{{ payment.id|stringformat:"04d" }}')"
