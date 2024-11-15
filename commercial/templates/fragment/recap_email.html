@@ -6,23 +6,23 @@
 <ul>
     <li>Nombre total de rapports : <b style="color: #002060">{{ nbr_total }}</b></li>
     <ul>
-        <li>Montant total : <b style="color: #002060">{{ amount_total }} DZD</b></li>
+        <li>Montant total : <b style="color: #002060">{{ amount_total|intcomma }} DZD</b></li>
     </ul>
     <li>Rapports Validés  : <b style="color: #002060">{{ validated_total }}</b></li>
     <ul>
-        <li>Montant total : <b style="color: #002060">{{ amount_validated }} DZD</b></li>
+        <li>Montant total : <b style="color: #002060">{{ amount_validated|intcomma }} DZD</b></li>
     </ul>
     <li>Rapports Confirmés  : <b style="color: #002060">{{ confirmed_total }}</b></li>
     <ul>
-        <li>Montant total : <b style="color: #002060">{{ amount_confirmed }} DZD</b></li>
+        <li>Montant total : <b style="color: #002060">{{ amount_confirmed|intcomma }} DZD</b></li>
     </ul>
     <li>Rapports Refusé : <b style="color: #002060">{{ refused_total }}</b></li>
     <ul>
-        <li>Montant total : <b style="color: #002060">{{ amount_refused }} DZD</b></li>
+        <li>Montant total : <b style="color: #002060">{{ amount_refused|intcomma }} DZD</b></li>
     </ul>
     <li>Rapport en Brouillons : <b style="color: #002060">{{ draft_total }}</b></li>
     <ul>
-        <li>Montant total : <b style="color: #002060">{{ amount_draft }} DZD</b></li>
+        <li>Montant total : <b style="color: #002060">{{ amount_draft|intcomma }} DZD</b></li>
     </ul>
 </ul>
 </br>
