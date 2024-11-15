@@ -43,8 +43,8 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 17 * * 4', 'commercial.cron.send_weekly_recap_email'),
-    ('0 17 28-31 * *', 'commercial.cron.send_monthly_recap_email'),
+    ('0 18 * * 4', 'commercial.cron.send_weekly_recap_email'),
+    ('0 18 28-31 * *', 'commercial.cron.send_monthly_recap_email'),
 ]
 
 
