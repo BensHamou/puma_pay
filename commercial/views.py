@@ -14,7 +14,6 @@ from functools import wraps
 from .filters import *
 from .models import *
 from .forms import *
-from .cron import send_monthly_recap_email
 
 def check_creator(view_func):
     @wraps(view_func)
@@ -101,7 +100,6 @@ def deleteBankView(request, id):
 @login_required(login_url='login')
 @admin_required
 def createBankView(request):
-    send_monthly_recap_email()
     form = BankForm()
     if request.method == 'POST':
         form = BankForm(request.POST)
