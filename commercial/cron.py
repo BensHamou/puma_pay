@@ -4,7 +4,7 @@ from .models import Payment
 from account.models import Zone
 from django.utils import timezone
 from django.db.models import Sum
-from datetime import timedelta
+from datetime import timedelta, date
 
 def send_recap_email(payments, subject, start_date, end_date, zone=None):
     validated_payments = payments.filter(state='Validé')
@@ -79,10 +79,11 @@ def send_weekly_recap_email():
         send_recap_email(payments, subject, start_date, end_date)
 
 def send_monthly_recap_email():
-    end_date = timezone.now()
-    start_date = end_date - timedelta(days=30)
-    payments = Payment.objects.filter(date__range=[start_date, end_date]).order_by('date_depot')
+    start_date = date(2024, 12, 1)
+    end_date = date(2024, 12, 31)
 
+    payments = Payment.objects.filter(date__range=[start_date, end_date]).order_by('date_depot')
+    
     for zone in Zone.objects.all():
         subject = f'Récapitulatif Mensuel des Paiements - {zone.designation}'
         zone_payments = payments.filter(zone=zone)
